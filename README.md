@@ -9,10 +9,10 @@ To start the program looping, you write a short script to call like the example 
 
 ```/opt/ThermoPI/ThermoPI.py 'HUDU/temperature1' 'HUDU/humidity1' 4 250```
 
->The first variable is the topic you want for the temperature measurement./n 
->The second variable is the topic you want for the humidity measurement./n 
->The third variable is the GPIO port (pin) that you want to connect the sensor to./n 
->The forth variable is the time you want between readings./n
+> + The first variable is the topic you want for the temperature measurement./n 
+> + The second variable is the topic you want for the humidity measurement./n 
+> + The third variable is the GPIO port (pin) that you want to connect the sensor to./n 
+> + The forth variable is the time you want between readings./n
 
 To run the program at boot in order to get constant readings, 
     see the Example-rc.local file and do something similar.
@@ -21,9 +21,9 @@ The PY program itself is well documented.
 Follow the comments there to change the necessary information.
 
 Program requirements (as written):
->Python 2.7/n 
->pigpio/n 
->paho-mqtt/n 
+> + Python 2.7/n 
+> + pigpio/n 
+> + paho-mqtt/n 
 
 If you have any questions, comments or additions be sure to add an issue and bring them up on my Discord Server: 
 

@@ -28,17 +28,17 @@ Program requirements (as written):  (feel free to fork it and convert to Python 
 If you have any questions, comments or additions be sure to add an issue and bring them up on my Discord Server: 
 
 ## Contact Links:
-[What are we Fixing Today Homepage](https://www.WhatAreWeFixing.Today/)
-[YouYube Channel Link](https://bit.ly/WhatAreWeFixingTodaysYT)
-[What are we Fixing Today Facebook page](https://bit.ly/WhatAreWeFixingTodayFB)
-[What are we Fixing Today Twitter](https://bit.ly/WhatAreWeFixingTodayTW)
-[Discord WhatAreWeFixingToday](https://discord.gg/Uhmhu3B)
+* [What are we Fixing Today Homepage](https://www.WhatAreWeFixing.Today/)
+* [YouYube Channel Link](https://bit.ly/WhatAreWeFixingTodaysYT)
+* [What are we Fixing Today Facebook page](https://bit.ly/WhatAreWeFixingTodayFB)
+* [What are we Fixing Today Twitter](https://bit.ly/WhatAreWeFixingTodayTW)
+* [Discord WhatAreWeFixingToday](https://discord.gg/Uhmhu3B)
 
 ### Please help support the channel:
 
-[Patreon Membership](https://www.patreon.com/WhatAreWeFixingToday)
+* [Patreon Membership](https://www.patreon.com/WhatAreWeFixingToday)
 
-[Buy me Coffee](https://www.buymeacoffee.com/SirGoodenough)
-[PayPal one-off donation link](https://www.paypal.me/SirGoodenough)
-[Cash App \$CASHTAG](https://cash.me/$SirGoodenough)
-[Venmo cash link](https://venmo.com/SirGoodenough)
+* [Buy me Coffee](https://www.buymeacoffee.com/SirGoodenough)
+* [PayPal one-off donation link](https://www.paypal.me/SirGoodenough)
+* [Cash App \$CASHTAG](https://cash.me/$SirGoodenough)
+* [Venmo cash link](https://venmo.com/SirGoodenough)

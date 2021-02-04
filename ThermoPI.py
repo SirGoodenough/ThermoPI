@@ -2,7 +2,7 @@
 
 # ThermoPI has been assembled by Sir GoodEnough (Jim Chaloupka)
 #  from the knowledge gained from others.
-#  Use of this program is free to makers of non commercial uses 
+#  Use of this program is free to makers of non commercial uses & 
 #  also within the license of other packages relied upon herein.
 #
 

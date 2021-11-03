@@ -39,7 +39,7 @@ import time
 import datetime
 import Adafruit_DHT
 import yaml
-with open("Mysecrets.yml", "r") as ymlfile:
+open("Mysecrets.yml", "r") as ymlfile:
     MYs = yaml.load(ymlfile)
 
 ### Paho.mqtt.client

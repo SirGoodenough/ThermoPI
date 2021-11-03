@@ -17,6 +17,7 @@ The Python program itself is well documented.
 
 Program requirements (as written):  (feel free to fork it and convert to Python 3.8 or updating the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
 + Python 2.7 
++ PyYAML        (https://pypi.org/project/PyYAML/)
 + Adafruit_DHT  (https://github.com/adafruit/Adafruit_Python_DHT)
 + paho-mqtt     (https://pypi.org/project/paho-mqtt/)
 

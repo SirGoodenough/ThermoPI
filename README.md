@@ -20,10 +20,10 @@ To run the program at boot in order to get constant readings,
 The PY program itself is well documented.
 Follow the comments there to change the necessary information.
 
-Program requirements (as written):  (feel free to fork it and convert to Python 3.8...)
+Program requirements (as written):  (feel free to fork it and convert to Python 3.8 or updating the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
 + Python 2.7 
-+ pigpio 
-+ paho-mqtt 
++ Adafruit_DHT  (https://github.com/adafruit/Adafruit_Python_DHT)
++ paho-mqtt     (https://pypi.org/project/paho-mqtt/)
 
 If you have any questions, comments or additions be sure to add an issue and bring them up on my Discord Server: 
 

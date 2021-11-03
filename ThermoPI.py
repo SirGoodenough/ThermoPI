@@ -57,7 +57,7 @@ DHT_PIN  = sys.argv[3]
 #DHT_PIN  = 'P8_11'
 
 if (len(sys.argv) < 2):
-   raise  ValueError('Input arguments of mqtt channel temperature humidity not passed')
+raise  ValueError('Input arguments of mqtt channel temperature humidity not passed')
 
 MOSQUITTO_HOST = '10.10.78.10' #Your Broker IP Address Here
 MOSQUITTO_PORT = 1883  #Your MQTT Port Here
@@ -90,8 +90,8 @@ try:
         # This might happen if the CPU is under a lot of load and the sensor
         # can't be reliably read (timing is critical to read the sensor).
         if humidity is None or tempC is None:
-           time.sleep(2)
-           continue
+        time.sleep(2)
+        continue
 
         temp = round((9.0/5.0 * tempC + 32),2)  # Conversion to F & round to .2
         humidity = round(humidity,2)            # Round to .2
@@ -128,4 +128,3 @@ try:
 
 except Exception as e:
     print('Error connecting to the mqtt server: {0}'.format(e))
-

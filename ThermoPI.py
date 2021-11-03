@@ -39,7 +39,7 @@ import time
 import datetime
 import Adafruit_DHT
 import yaml
-
+import io
 
 ### Paho.mqtt.client
 import paho.mqtt.client as mqtt

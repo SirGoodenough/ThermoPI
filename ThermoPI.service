@@ -5,7 +5,7 @@ After=multi-user.target network.target
 [Service]
 User=pi
 Type=idle
-ExecStart=/opt/ThermoPI/ThermoPI.py 'HUDU/temperature1' 'HUDU/humidity1' 4 250 > /dev/null 2>&1
+ExecStart=/opt/ThermoPI/ThermoPI.py  > /dev/null 2>&1
 KillSignal=SIGINT
 Restart=always
 RestartSec=10

@@ -36,9 +36,26 @@ import requests
 import sys
 import time
 import datetime
-import paho.mqtt.client as mqtt
 import Adafruit_DHT
+import MYsecrets
 
+### Paho.mqtt.client
+import paho.mqtt.client as mqtt
+# The callback for when the client receives a CONNACK response from the server.
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("$SYS/#")
+
+# The callback for when a PUBLISH message is received from the server.
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
 
 #==================================================================================================================================================
 #Usage
@@ -59,27 +76,27 @@ DHT_PIN  = sys.argv[3]
 if (len(sys.argv) < 2):
     raise  ValueError('Input arguments of mqtt channel temperature humidity not passed')
 
-MOSQUITTO_HOST = '10.10.78.10' #Your Broker IP Address Here
-MOSQUITTO_PORT = 1883  #Your MQTT Port Here
-MOSQUITTO_USER = 'MQTTLogin' #change to your credentials as needed
-MOSQUITTO_PWD  = '78686a83-ab00-4bbe-8f86-b3be9eaa844a'
-MOSQUITTO_TEMP_MSG = str(sys.argv[1]) # Old channel name in here
-MOSQUITTO_HUMI_MSG = str(sys.argv[2]) # Old channel name now passed by argument
-print('Mosquitto Temp MSG {0}'.format(MOSQUITTO_TEMP_MSG))
-print('Mosquitto Humidity MSG {0}'.format(MOSQUITTO_HUMI_MSG))
-
-# How long to wait (in seconds) between measurements.
-print "Args length: " + str(len(sys.argv))
-FREQUENCY_SECONDS      = 300
-
-if (len(sys.argv) > 4):
-    FREQUENCY_SECONDS = float(sys.argv[4])
+LWT = Mysecrets.LWT
+FREQUENCY_SECONDS = MYsecrets.LOOP
+HOST = MYsecrets.HOST
+PORT = MYsecrets.PORT
+USER = MYsecrets.USER
+PWD = MYsecrets.PWD
+TEMP_TOPIC = MYsecrets.TEMP  # str(sys.argv[1]) 
+HUMI_TOPIC = MYsecrets.HUMI  # str(sys.argv[2]) 
+print('Mosquitto Temp MSG {0}'.format(TEMP_TOPIC))
+print('Mosquitto Humidity MSG {0}'.format(HUMI_TOPIC))
 
     #Log Message to start
-print('Logging sensor measurements to {0} every {1} seconds.'.format('MQTT', FREQUENCY_SECONDS))
+print('Logging sensor measurements to {0} every {1} seconds.'.format('Home Assistant', FREQUENCY_SECONDS))
 print('Press Ctrl-C to quit.')
-print('Connecting to MQTT on {0}'.format(MOSQUITTO_HOST))
-mqttc = mqtt.Client("python_pub",transport='websockets')
+print('Connecting to MQTT on {0}'.format(HOST))
+mqttc = client('python_pub', 'False', 'MQTTv311',)
+mqttc.username_pw_set(USER, PWD) # deactivate if not needed
+mqttc.will_set(LWT, 'Offline', 0, True)
+mqttc.connect(HOST, PORT, 60)
+mqttc.publish(LWT, 'Online', 0, True)
+print('Connecting to MQTT Result: {0} |\|/| {1}'.format(on_connect, on_message))
 try:
 
     while True:
@@ -102,18 +119,19 @@ try:
         print('Humidity:    {0:0.2f} %'.format(humidity))
 
         # Publish to the MQTT channel
-        mqttc.username_pw_set(MOSQUITTO_USER,MOSQUITTO_PWD) # deactivate if not needed
         try:
-            mqttc.connect(MOSQUITTO_HOST,MOSQUITTO_PORT)
+            mqttc.loop_start()
 
-            print 'Updating {0}'.format(MOSQUITTO_TEMP_MSG)
-            (result1,mid) = mqttc.publish(MOSQUITTO_TEMP_MSG,temp,qos=0,retain=True)
+            print('Updating {0}'.format(TEMP_TOPIC))
+            (result1,mid) = mqttc.publish(TEMP_TOPIC,temp,qos=0,retain=True)
+            print('Result {0}'.format(on_message))
 
-            print 'Updating {0}'.format(MOSQUITTO_HUMI_MSG)
+            print('Updating {0}'.format(HUMI_TOPIC))
             time.sleep(1)
-            (result2,mid) = mqttc.publish(MOSQUITTO_HUMI_MSG,humidity,qos=0,retain=True)
+            (result2,mid) = mqttc.publish(HUMI_TOPIC,humidity,qos=0,retain=True)
+            print('Result {0}'.format(on_message))
 
-            print 'MQTT Updated result {0} and {1}'.format(result1,result2)
+            print('MQTT Updated result {0} and {1}'.format(result1,result2))
 
             if result1 == 1 or result2 == 1:
                 raise ValueError('Result for one message was not 0')
@@ -127,7 +145,7 @@ try:
             continue
 
         # Wait 30 seconds before continuing (or your variable setting from command line)
-        print('Wrote a message to MQTT')
+        print('Wrote a message to Home Assistant')
         time.sleep(FREQUENCY_SECONDS)
 
 except Exception as e:

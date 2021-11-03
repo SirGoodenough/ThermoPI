@@ -2,29 +2,18 @@
 Use a Raspberry PI connected to one or more temperature sensors to send the results to a MQTT server.
 
 ## USAGE:
+Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)
 
-Install the program into opt/ThermoPI or any suitable location.
+You will need to rename the file ***MYsecretsSample.py*** to ***MYsecrets.py***.
+Edit the contents of the new ***MYsecrets.py*** to match your MQTT installation and requirements.
 
-To start the program looping, you write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
-
-```/opt/ThermoPI/ThermoPI.py 'HUDU/temperature1' 'HUDU/humidity1' 4 250```
-
-+ The first variable is the topic you want for the temperature measurement. 
-+ The second variable is the topic you want for the humidity measurement. 
-+ The third variable is the GPIO port (pin) that you want to connect the sensor to. 
-+ The forth variable is the time in seconds you want between readings.
+To start the program looping, you can write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
 
 To run the program at boot in order to get constant readings, 
     see the Example-rc.local file and do something similar.
-    There is also ThermoPI.service to run this as a service with load-service.sh there to set that up.
+    There is also ThermoPI.service to run this as a service with load-service.sh there to set it up as a service. (preferred)
 
 The Python program itself is well documented.
-Follow the comments there to change the necessary information.
-This includes adding your values for:
-+ MOSQUITTO_HOST = '10.10.78.10' #Your Broker IP Address Here
-+ MOSQUITTO_PORT = 1883  #Your MQTT Port Here
-+ MOSQUITTO_USER = 'MQTTLogin' #change to your credentials as needed
-+ MOSQUITTO_PWD  = '78686a83-ab00-4bbe-8f86-b3be9eaa844a'
 
 Program requirements (as written):  (feel free to fork it and convert to Python 3.8 or updating the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
 + Python 2.7 

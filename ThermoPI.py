@@ -104,13 +104,17 @@ try:
         # Publish to the MQTT channel
         mqttc.username_pw_set(MOSQUITTO_USER,MOSQUITTO_PWD) # deactivate if not needed
         try:
-            mqttc.connect(MOSQUITTO_HOST,MOSQUITTO_PORT);
+            mqttc.connect(MOSQUITTO_HOST,MOSQUITTO_PORT)
+
             print 'Updating {0}'.format(MOSQUITTO_TEMP_MSG)
             (result1,mid) = mqttc.publish(MOSQUITTO_TEMP_MSG,temp,qos=0,retain=True)
+
             print 'Updating {0}'.format(MOSQUITTO_HUMI_MSG)
             time.sleep(1)
             (result2,mid) = mqttc.publish(MOSQUITTO_HUMI_MSG,humidity,qos=0,retain=True)
+
             print 'MQTT Updated result {0} and {1}'.format(result1,result2)
+
             if result1 == 1 or result2 == 1:
                 raise ValueError('Result for one message was not 0')
             mqttc.disconnect()

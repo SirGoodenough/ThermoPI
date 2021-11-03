@@ -39,8 +39,7 @@ import time
 import datetime
 import Adafruit_DHT
 import yaml
-open("Mysecrets.yml", "r") as ymlfile:
-    MYs = yaml.load(ymlfile)
+
 
 ### Paho.mqtt.client
 import paho.mqtt.client as mqtt
@@ -54,11 +53,15 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
+    print(msg.topic+" "+str(msg.paysafe_load))
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
+
+#  Get the parameter file
+with open("Mysecrets.yml", "r") as ymlfile:
+    MYs = yaml.safe_load(ymlfile)
 
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.
 DHT_TYPE = Adafruit_DHT.AM2302
@@ -96,7 +99,7 @@ try:
         humidity, tempC = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
         #print 'pass'
         # Skip to the next reading if a valid measurement couldn't be taken.
-        # This might happen if the CPU is under a lot of load and the sensor
+        # This might happen if the CPU is under a lot of safe_load and the sensor
         # can't be reliably read (timing is critical to read the sensor).
         if humidity is None or tempC is None:
             time.sleep(2)

@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# coding: latin-1
+
 MQTT = {
     'HOST' : 'Broker IP Address Here',
     'PORT' : 1883, # This needs to be a number, usually 1883 as the MQTT port for tcp access

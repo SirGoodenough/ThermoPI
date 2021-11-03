@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding: latin-1
 
 # ThermoPI has been assembled by Sir GoodEnough (Jim Chaloupka)
 #  from the knowledge gained from others.

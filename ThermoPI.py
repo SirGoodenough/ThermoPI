@@ -38,7 +38,9 @@ import sys
 import time
 import datetime
 import Adafruit_DHT
-import MYsecrets
+import yaml
+with open("Mysecrets.yml", "r") as ymlfile:
+    MYs = yaml.load(ymlfile)
 
 ### Paho.mqtt.client
 import paho.mqtt.client as mqtt
@@ -64,16 +66,16 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN = MYsecrets.PIN
+DHT_PIN = MYs[PIN]
 
-LWT = MYsecrets.LWT
-FREQUENCY_SECONDS = MYsecrets.LOOP
-HOST = MYsecrets.HOST
-PORT = MYsecrets.PORT
-USER = MYsecrets.USER
-PWD = MYsecrets.PWD
-TEMP_TOPIC = MYsecrets.TEMP  # str(sys.argv[1]) 
-HUMI_TOPIC = MYsecrets.HUMI  # str(sys.argv[2]) 
+LWT = MYs[LWT]
+FREQUENCY_SECONDS = MYs[LOOP]
+HOST = MYs[HOST]
+PORT = MYs[PORT]
+USER = MYs[USER]
+PWD = MYs[PWD]
+TEMP_TOPIC = MYs[TEMP]
+HUMI_TOPIC = MYs[HUMI]
 print('Mosquitto Temp MSG {0}'.format(TEMP_TOPIC))
 print('Mosquitto Humidity MSG {0}'.format(HUMI_TOPIC))
 

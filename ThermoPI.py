@@ -67,11 +67,11 @@ client.on_message = on_message
 
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.
 DHT_TYPE = Adafruit_DHT.AM2302
-
 # Example of sensor connected to Raspberry Pi pin 23
-DHT_PIN  = sys.argv[3]
+#DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
+DHT_PIN  = MYsecrets.PIN
 
 if (len(sys.argv) < 2):
     raise  ValueError('Input arguments of mqtt channel temperature humidity not passed')

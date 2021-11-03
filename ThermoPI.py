@@ -69,7 +69,7 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN = MYs[GPIO_PIN]
+DHT_PIN = 4
 
 LWT = MYs[LWT]
 FREQUENCY_SECONDS = MYs[LOOP]
@@ -96,7 +96,7 @@ try:
 
     while True:
         # Attempt to get sensor reading.
-        humidity, tempC = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
+        humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
         #print 'pass'
         # Skip to the next reading if a valid measurement couldn't be taken.
         # This might happen if the CPU is under a lot of safe_load and the sensor

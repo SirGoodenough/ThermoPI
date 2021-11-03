@@ -18,7 +18,7 @@ To run the program at boot in order to get constant readings,
     see the Example-rc.local file and do something similar.
     There is also ThermoPI.service to run this as a service with load-service.sh there to set that up.
 
-The PY program itself is well documented.
+The Python program itself is well documented.
 Follow the comments there to change the necessary information.
 This includes adding your values for:
 + MOSQUITTO_HOST = '10.10.78.10' #Your Broker IP Address Here

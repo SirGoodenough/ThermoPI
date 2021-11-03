@@ -60,7 +60,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 #  Get the parameter file
-with open("Mysecrets.yml", "r") as ymlfile:
+with open("MYsecrets.yml", "r") as ymlfile:
     MYs = yaml.safe_load(ymlfile)
 
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.

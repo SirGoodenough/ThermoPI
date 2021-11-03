@@ -57,26 +57,15 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-#==================================================================================================================================================
-#Usage
-#python mqtt.channel.py <temp topic> <humidity topic> <gpio pin> <optional update frequency>
-# eg python mqtt.channel.py 'cupboard/temperature1' 'cupboard/humidity1' 4
-# will start an instance using 'cupboard/temperature1' as the temperature topic, and using gpio port 4 to talk to a DHT22 sensor
-# it will use the default update time of 300 secons.
-#==================================================================================================================================================
-
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.
 DHT_TYPE = Adafruit_DHT.AM2302
 # Example of sensor connected to Raspberry Pi pin 23
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN  = MYsecrets.PIN
+DHT_PIN = MYsecrets.PIN
 
-if (len(sys.argv) < 2):
-    raise  ValueError('Input arguments of mqtt channel temperature humidity not passed')
-
-LWT = Mysecrets.LWT
+LWT = MYsecrets.LWT
 FREQUENCY_SECONDS = MYsecrets.LOOP
 HOST = MYsecrets.HOST
 PORT = MYsecrets.PORT

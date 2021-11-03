@@ -69,7 +69,7 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN = MYs[PIN]
+DHT_PIN = MYs[GPIO_PIN]
 
 LWT = MYs[LWT]
 FREQUENCY_SECONDS = MYs[LOOP]

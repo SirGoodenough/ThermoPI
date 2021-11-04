@@ -4,8 +4,8 @@ Use a Raspberry PI connected to one or more temperature sensors to send the resu
 ## USAGE:
 Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)
 
-You will need to rename the file ***MYsecretsSample.yml*** to ***MYsecrets.yml***.
-Edit the contents of the new ***MYsecrets.yml*** to match your MQTT installation and requirements.
+You will need to rename the file ***MYsecretsSample.yaml*** to ***MYsecrets.yaml***.
+Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT installation and requirements.
 
 To start the program looping, you can write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
 
@@ -15,11 +15,11 @@ To run the program at boot in order to get constant readings,
 
 The Python program itself is well documented.
 
-Program requirements (as written):  (feel free to fork it and convert to Python 3.8 or updating the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
-+ Python 2.7 
+Program requirements (as written):  (Feel free to fork it & update the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
++ Python 3.8 
 + PyYAML        (https://pypi.org/project/PyYAML/)
 + Adafruit_DHT  (https://github.com/adafruit/Adafruit_Python_DHT)
-+ paho-mqtt     (https://pypi.org/project/paho-mqtt/)
++ Paho-MQTT     (https://pypi.org/project/paho-mqtt/)
 
 If you have any questions, comments or additions be sure to add an issue and bring them up on my Discord Server: 
 

@@ -3,7 +3,7 @@ Description=ThermoPI Temp Reader
 After=multi-user.target network.target
 
 [Service]
-User=pi
+User=root
 Type=idle
 ExecStart=/opt/ThermoPI/ThermoPI.py  > /dev/null 2>&1
 KillSignal=SIGINT

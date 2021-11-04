@@ -31,7 +31,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import json
+
 import requests
 import sys
 import time
@@ -53,7 +53,7 @@ def on_connect(client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.paysafe_load))
-
+    
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message

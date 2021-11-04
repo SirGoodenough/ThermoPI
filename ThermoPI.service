@@ -4,11 +4,12 @@ After=multi-user.target network.target
 
 [Service]
 User=pi
-Type=idle
-ExecStart=/opt/ThermoPI/ThermoPI.py  > /dev/null 2>&1
+Type=simple
+ExecStart=/usr/bin/python3 /opt/ThermoPI/ThermoPI.py  > /dev/null 2>&1
 KillSignal=SIGINT
 Restart=always
 RestartSec=10
+SyslogIdentifier=ThermoPI
 
 [Install]
 WantedBy=multi-user.target

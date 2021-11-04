@@ -95,8 +95,8 @@ try:
 
     while True:
         # Attempt to get sensor reading.
-        humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
-        #print 'pass'
+        humidity, tempC = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
+        print 'pass'
         # Skip to the next reading if a valid measurement couldn't be taken.
         # This might happen if the CPU is under a lot of safe_load and the sensor
         # can't be reliably read (timing is critical to read the sensor).

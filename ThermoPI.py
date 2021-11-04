@@ -85,7 +85,7 @@ print('Mosquitto Humidity MSG {0}'.format(HUMI_TOPIC))
 print('Logging sensor measurements to {0} every {1} seconds.'.format('Home Assistant', LOOP))
 print('Press Ctrl-C to quit.')
 print('Connecting to MQTT on {0}'.format(HOST))
-mqttc = mqtt.client('python_pub', 'False', 'MQTTv311',)
+mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
 mqttc.connect(HOST, PORT, 60)

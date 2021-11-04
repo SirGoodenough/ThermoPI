@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Stopping relay-server"
+echo "Stopping ThermoPI"
 sudo systemctl stop ThermoPI.service  
 
 echo "Copy file over"

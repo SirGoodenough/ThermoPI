@@ -5,7 +5,7 @@ Use a Raspberry PI connected to one or more temperature sensors to send the resu
 Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)
 
 You will need to rename the file ***MYsecretsSample.yaml*** to ***MYsecrets.yaml***.
-Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT installation and requirements.
+Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT installation and requirements.  You will also need to supply the full path to the secrets file in line 45 of the python code.
 
 To start the program looping, you can write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
 

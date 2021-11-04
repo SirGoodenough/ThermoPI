@@ -68,16 +68,16 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN = MYs[PIN]
+DHT_PIN = MYs["PIN"]
 
-LWT = MYs[LWT]
-LOOP = MYs[LOOP]
-HOST = MYs[HOST]
-PORT = MYs[PORT]
-USER = MYs[USER]
-PWD = MYs[PWD]
-TEMP_TOPIC = MYs[TEMP]
-HUMI_TOPIC = MYs[HUMI]
+LWT = MYs["LWT"]
+LOOP = MYs["LOOP"]
+HOST = MYs["HOST"]
+PORT = MYs["PORT"]
+USER = MYs["USER"]
+PWD = MYs["PWD"]
+TEMP_TOPIC = MYs["TEMP"]
+HUMI_TOPIC = MYs["HUMI"]
 print('Mosquitto Temp MSG {0}'.format(TEMP_TOPIC))
 print('Mosquitto Humidity MSG {0}'.format(HUMI_TOPIC))
 

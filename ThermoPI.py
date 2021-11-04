@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# coding: latin-1
+#!/usr/bin/python3
 
 # ThermoPI has been assembled by Sir GoodEnough (Jim Chaloupka)
 #  from the knowledge gained from others.
@@ -69,10 +68,10 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN = 4
+DHT_PIN = MYs[PIN]
 
 LWT = MYs[LWT]
-FREQUENCY_SECONDS = MYs[LOOP]
+LOOP = MYs[LOOP]
 HOST = MYs[HOST]
 PORT = MYs[PORT]
 USER = MYs[USER]
@@ -83,7 +82,7 @@ print('Mosquitto Temp MSG {0}'.format(TEMP_TOPIC))
 print('Mosquitto Humidity MSG {0}'.format(HUMI_TOPIC))
 
     #Log Message to start
-print('Logging sensor measurements to {0} every {1} seconds.'.format('Home Assistant', FREQUENCY_SECONDS))
+print('Logging sensor measurements to {0} every {1} seconds.'.format('Home Assistant', LOOP))
 print('Press Ctrl-C to quit.')
 print('Connecting to MQTT on {0}'.format(HOST))
 mqttc = client('python_pub', 'False', 'MQTTv311',)
@@ -141,7 +140,7 @@ try:
 
         # Wait 30 seconds before continuing (or your variable setting from command line)
         print('Wrote a message to Home Assistant')
-        time.sleep(FREQUENCY_SECONDS)
+        time.sleep(LOOP)
 
 except Exception as e:
     print('Error connecting to the mqtt server: {0}'.format(e))

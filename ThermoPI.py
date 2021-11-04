@@ -35,28 +35,11 @@
 import Adafruit_DHT
 import datetime
 import io
+import paho.mqtt.client as mqtt
 import requests
 import sys
 import time
 import yaml
-
-### Paho.mqtt.client
-import paho.mqtt.client as mqtt
-# The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-    client.subscribe("$SYS/#")
-
-# The callback for when a PUBLISH message is received from the server.
-def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.paysafe_load))
-    
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
 
 #  Get the parameter file
 with open("MYsecrets.yaml", "r") as ymlfile:
@@ -69,7 +52,6 @@ DHT_TYPE = Adafruit_DHT.AM2302
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
 DHT_PIN = MYs["PIN"]
-
 LWT = MYs["LWT"]
 LOOP = MYs["LOOP"]
 HOST = MYs["HOST"]
@@ -78,8 +60,8 @@ USER = MYs["USER"]
 PWD = MYs["PWD"]
 TEMP_TOPIC = MYs["TEMP"]
 HUMI_TOPIC = MYs["HUMI"]
-print('Mosquitto Temp MSG {0}'.format(TEMP_TOPIC))
-print('Mosquitto Humidity MSG {0}'.format(HUMI_TOPIC))
+print('Mosquitto Temp topic {0}'.format(TEMP_TOPIC))
+print('Mosquitto Humidity topic {0}'.format(HUMI_TOPIC))
 
     #Log Message to start
 print('Logging sensor measurements to {0} every {1} seconds.'.format('Home Assistant', LOOP))
@@ -90,7 +72,6 @@ mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
 mqttc.connect(HOST, PORT, 60)
 mqttc.publish(LWT, 'Online', 0, True)
-print('Connecting to MQTT Result: {0} |\|/| {1}'.format(on_connect, on_message))
 try:
 
     while True:
@@ -114,17 +95,15 @@ try:
 
         # Publish to the MQTT channel
         try:
-            mqttc.loop_start()
+            mqttc.loop_forever()
 
             print('Updating {0}'.format(TEMP_TOPIC))
             (result1,mid) = mqttc.publish(TEMP_TOPIC,temp,qos=0,retain=True)
-            print('Result {0}'.format(on_message))
-
+        
             print('Updating {0}'.format(HUMI_TOPIC))
             time.sleep(1)
             (result2,mid) = mqttc.publish(HUMI_TOPIC,humidity,qos=0,retain=True)
-            print('Result {0}'.format(on_message))
-
+    
             print('MQTT Updated result {0} and {1}'.format(result1,result2))
 
             if result1 == 1 or result2 == 1:

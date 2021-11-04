@@ -97,7 +97,7 @@ try:
         # Attempt to get sensor reading.
         humidity, tempC = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
         print('pass')
-        print('Temperature: {0:0.2f} F'.format(temp))
+        print('Temperature: {0:0.2f} F'.format(tempC))
         print('Humidity:    {0:0.2f} %'.format(humidity))
 
         # Skip to the next reading if a valid measurement couldn't be taken.

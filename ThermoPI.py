@@ -32,13 +32,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import Adafruit_DHT
+import datetime
+import io
 import requests
 import sys
 import time
-import datetime
-import Adafruit_DHT
 import yaml
-import io
 
 ### Paho.mqtt.client
 import paho.mqtt.client as mqtt
@@ -97,9 +97,6 @@ try:
         # Attempt to get sensor reading.
         humidity, tempC = Adafruit_DHT.read(DHT_TYPE, DHT_PIN)
         print('pass')
-        print('Temperature: {0:0.2f} F'.format(tempC))
-        print('Humidity:    {0:0.2f} %'.format(humidity))
-
         # Skip to the next reading if a valid measurement couldn't be taken.
         # This might happen if the CPU is under a lot of safe_load and the sensor
         # can't be reliably read (timing is critical to read the sensor).

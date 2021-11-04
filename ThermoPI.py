@@ -70,32 +70,24 @@ print('Connecting to MQTT on {0}'.format(HOST))
 mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
-mqttc.connect(HOST, PORT, 60)
-mqttc.publish(LWT, 'Online', 0, True)
 try:
 
     while True:
         # Attempt to get sensor reading.
         humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
-        print('pass')
-        # Skip to the next reading if a valid measurement couldn't be taken.
-        # This might happen if the CPU is under a lot of safe_load and the sensor
-        # can't be reliably read (timing is critical to read the sensor).
-        #if humidity is None or tempC is None:
-        #    time.sleep(2)
-        #continue
 
-        temp = round((9.0/5.0 * tempC + 32),2)  # Conversion to F & round to .2
-        humidity = round(humidity,2)            # Round to .2
+        temp = round((9.0/5.0 * tempC + 32),1)  # Conversion to F & round to .1
+        humidity = round(humidity,1)            # Round to .1
 
         currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
         print('Date Time:   {0}'.format(currentdate))
-        print('Temperature: {0:0.2f} F'.format(temp))
-        print('Humidity:    {0:0.2f} %'.format(humidity))
+        print('Temperature: {0:0.1f} F'.format(temp))
+        print('Humidity:    {0:0.1f} %'.format(humidity))
 
         # Publish to the MQTT channel
         try:
-            mqttc.loop_forever()
+            mqttc.connect(HOST, PORT, 60)
+            # mqttc.publish(LWT, 'Online', 0, True)
 
             print('Updating {0}'.format(TEMP_TOPIC))
             (result1,mid) = mqttc.publish(TEMP_TOPIC,temp,qos=0,retain=True)
@@ -113,6 +105,7 @@ try:
         except Exception as e:
             # Error appending data, most likely because credentials are stale.
             # Null out the worksheet so a login is performed at the top of the loop.
+            mqttc.publish(LWT, 'Offline', 0, True)
             mqttc.disconnect()
             print('Append error, logging in again: ' + str(e))
             continue
@@ -122,4 +115,5 @@ try:
         time.sleep(LOOP)
 
 except Exception as e:
+    mqttc.publish(LWT, 'Offline', 0, True)
     print('Error connecting to the mqtt server: {0}'.format(e))

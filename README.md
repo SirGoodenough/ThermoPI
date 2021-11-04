@@ -16,7 +16,7 @@ To run the program at boot in order to get constant readings,
 The Python program itself is well documented.
 
 Program requirements (as written):  (Feel free to fork it & update the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
-+ Python 3.8 
++ Python 3.6 or better 
 + PyYAML        (https://pypi.org/project/PyYAML/)
 + Adafruit_DHT  (https://github.com/adafruit/Adafruit_Python_DHT)
 + Paho-MQTT     (https://pypi.org/project/paho-mqtt/)

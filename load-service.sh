@@ -4,7 +4,7 @@ echo "Stopping relay-server"
 sudo systemctl stop ThermoPI.service  
 
 echo "Copy file over"
-sudo cp /opt/ThermoPI.ThermoPI.service /lib/systemd/system/ThermoPI.service
+sudo cp /opt/ThermoPI/ThermoPI.service /lib/systemd/system/ThermoPI.service
 
 echo "Change permissions on new file"
 sudo chmod 644 /lib/systemd/system/ThermoPI.service

@@ -70,6 +70,52 @@ print('Connecting to MQTT on {0}'.format(HOST))
 mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
+mqttc.connect(HOST, PORT, 60)
+mqttc.loop_start()
+
+'''
+Sensors with multiple values
+
+Setting up a sensor with multiple measurement values requires multiple consecutive 
+configuration topic submissions.
+
+Configuration topic no1: homeassistant/sensor/sensorBedroomT/config
+Configuration payload no1: {"device_class": "temperature", "name":
+ "Temperature", "state_topic": "homeassistant/sensor/sensorBedroom/state",
+  "unit_of_measurement": "°C", "value_template": "{{ value_json.temperature}}" }
+
+Configuration topic no2: homeassistant/sensor/sensorBedroomH/config
+Configuration payload no2: {"device_class": "humidity", "name":
+ "Humidity", "state_topic": "homeassistant/sensor/sensorBedroom/state",
+  "unit_of_measurement": "%", "value_template": "{{ value_json.humidity}}" }
+
+Common state payload: { "temperature": 23.20, "humidity": 43.70 }
+
+
+    Configuration topic: homeassistant/switch/irrigation/config
+    Command topic: homeassistant/switch/irrigation/set
+    State topic: homeassistant/switch/irrigation/state
+    Configuration payload: {"~": "homeassistant/switch/irrigation", "name": "garden", "cmd_t": "~/set", "stat_t": "~/state"}
+
+
+    Configuration topic: homeassistant/switch/irrigation/config
+    State topic: homeassistant/switch/irrigation/state
+    Command topic: homeassistant/switch/irrigation/set
+    Payload: {"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}
+
+mosquitto_pub -h 127.0.0.1 -p 1883 -t "homeassistant/switch/irrigation/config" \
+  -m '{"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}'
+
+Bash
+
+Set the state.
+
+mosquitto_pub -h 127.0.0.1 -p 1883 -t "homeassistant/switch/irrigation/set" -m ON
+
+B
+
+'''
+
 try:
 
     while True:
@@ -86,7 +132,7 @@ try:
 
         # Publish to the MQTT channel
         try:
-            mqttc.connect(HOST, PORT, 60)
+            # mqttc.connect(HOST, PORT, 60)
             # mqttc.publish(LWT, 'Online', 0, True)
 
             print('Updating {0}'.format(TEMP_TOPIC))
@@ -99,15 +145,20 @@ try:
             print('MQTT Updated result {0} and {1}'.format(result1,result2))
 
             if result1 == 1 or result2 == 1:
-                raise ValueError('Result for one message was not 0')
-            mqttc.disconnect()
+                raise ValueError('Result for a message was not 0')
+            # mqttc.disconnect()
 
         except Exception as e:
             # Error appending data, most likely because credentials are stale.
             # Null out the worksheet so a login is performed at the top of the loop.
-            mqttc.publish(LWT, 'Offline', 0, True)
+            # mqttc.publish(LWT, 'Offline', 0, True)
+            # mqttc.disconnect()
+            print('MQTT error, trying in again: ' + str(e))
+            mqttc.loop_stop()
             mqttc.disconnect()
-            print('Append error, logging in again: ' + str(e))
+            mqttc.connect(HOST, PORT, 60)
+            mqttc.loop_start()
+            time.sleep(1)
             continue
 
         # Wait 30 seconds before continuing (or your variable setting from command line)
@@ -117,3 +168,4 @@ try:
 except Exception as e:
     mqttc.publish(LWT, 'Offline', 0, True)
     print('Error connecting to the mqtt server: {0}'.format(e))
+    mqttc.loop_stop()

@@ -72,6 +72,7 @@ mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
 mqttc.connect(HOST, PORT, 60)
 mqttc.loop_start()
+mqttc.publish(LWT, 'Online', 0, True)
 
 '''
 Sensors with multiple values
@@ -91,12 +92,10 @@ Configuration payload no2: {"device_class": "humidity", "name":
 
 Common state payload: { "temperature": 23.20, "humidity": 43.70 }
 
-
     Configuration topic: homeassistant/switch/irrigation/config
     Command topic: homeassistant/switch/irrigation/set
     State topic: homeassistant/switch/irrigation/state
     Configuration payload: {"~": "homeassistant/switch/irrigation", "name": "garden", "cmd_t": "~/set", "stat_t": "~/state"}
-
 
     Configuration topic: homeassistant/switch/irrigation/config
     State topic: homeassistant/switch/irrigation/state
@@ -106,13 +105,9 @@ Common state payload: { "temperature": 23.20, "humidity": 43.70 }
 mosquitto_pub -h 127.0.0.1 -p 1883 -t "homeassistant/switch/irrigation/config" \
   -m '{"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}'
 
-Bash
-
 Set the state.
 
 mosquitto_pub -h 127.0.0.1 -p 1883 -t "homeassistant/switch/irrigation/set" -m ON
-
-B
 
 '''
 
@@ -150,14 +145,15 @@ try:
 
         except Exception as e:
             # Error appending data, most likely because credentials are stale.
-            # Null out the worksheet so a login is performed at the top of the loop.
-            # mqttc.publish(LWT, 'Offline', 0, True)
-            # mqttc.disconnect()
+            #  disconnect and re-connect...
             print('MQTT error, trying in again: ' + str(e))
+            mqttc.publish(LWT, 'Offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
+            time.sleep(1)
             mqttc.connect(HOST, PORT, 60)
             mqttc.loop_start()
+            mqttc.publish(LWT, 'Online', 0, True)
             time.sleep(1)
             continue
 
@@ -166,6 +162,10 @@ try:
         time.sleep(LOOP)
 
 except Exception as e:
-    mqttc.publish(LWT, 'Offline', 0, True)
     print('Error connecting to the mqtt server: {0}'.format(e))
+    mqttc.publish(LWT, 'Offline', 0, True)
     mqttc.loop_stop()
+
+print('Normal Shutdown')
+mqttc.publish(LWT, 'Offline', 0, True)
+mqttc.loop_stop()

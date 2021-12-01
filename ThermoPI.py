@@ -68,8 +68,8 @@ USER = MYs["USER"]
 PWD = MYs["PWD"]
 payloadTconfig = {
     "name":NAMET,
-    "dev":"HUDU",
-    "uniq_id":"HUDU_Temperature",
+    "dev":DEVICE,
+    "uniq_id":T_ID,
     "dev_cla":"temperature",
     "stat_t":STATE,
     "avty_t":LWT,
@@ -79,8 +79,8 @@ payloadTconfig = {
     "val_tpl":"{{ value_json.temperature }}" }
 payloadHconfig = {
     "name":NAMEH,
-    "dev":"HUDU",
-    "uniq_id":"HUDU_Humidity",
+    "dev":DEVICE,
+    "uniq_id":H_ID,
     "dev_cla":"humidity",
     "stat_t":STATE,
     "avty_t":LWT,

@@ -93,7 +93,7 @@ def mqttConnect():
 print('Mosquitto STATE topic {0}'.format(STATE))
 
     #Log Message to start
-print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH , LOOP))
+print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
 print('Press Ctrl-C to quit.')
 mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
@@ -101,10 +101,6 @@ mqttc.will_set(LWT, 'Offline', 0, True)
 mqttConnect()
 
 '''
-Sensors with multiple values
-
-Setting up a sensor with multiple measurement values requires multiple consecutive 
-configuration topic submissions.
 
 Configuration topic no1: homeassistant/sensor/sensorBedroomT/config
 Configuration payload no1: {"device_class": "temperature", "name":
@@ -165,13 +161,9 @@ try:
         print('Sent values to Home Assistant')
         time.sleep(LOOP)
 
-except Exception as e:
-    print('Unknown error: {0}'.format(e))
+except KeyboardInterrupt:
+    print('Keyboard Interrupt')
     mqttc.publish(LWT, 'Offline', 0, True)
     mqttc.loop_stop()
     mqttc.disconnect()
-
-print('Normal Shutdown')
-mqttc.publish(LWT, 'Offline', 0, True)
-mqttc.loop_stop()
-mqttc.disconnect()
+    sys.exit()

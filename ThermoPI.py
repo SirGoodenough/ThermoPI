@@ -40,6 +40,7 @@ import requests
 import sys
 import time
 import yaml
+import json
 
 #  Get the parameter file
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
@@ -52,16 +53,36 @@ DHT_TYPE = Adafruit_DHT.AM2302
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
 DHT_PIN = MYs["PIN"]
+CONFIG = MYs["CONFIG"]
+STATE = MYs["STATE"]
+NAMEH = MYs["NAMEH"]
+NAMET = MYs["NAMET"]
 LWT = MYs["LWT"]
 LOOP = MYs["LOOP"]
 HOST = MYs["HOST"]
 PORT = MYs["PORT"]
 USER = MYs["USER"]
 PWD = MYs["PWD"]
-TEMP_TOPIC = MYs["TEMP"]
-HUMI_TOPIC = MYs["HUMI"]
-print('Mosquitto Temp topic {0}'.format(TEMP_TOPIC))
-print('Mosquitto Humidity topic {0}'.format(HUMI_TOPIC))
+payloadTconfig={
+    "name":NAMET,
+    "dev_cla":"temperature",
+    "stat_t":STATE,
+    "avty_t":LWT,
+    "pl_avail":"Online",
+    "pl_not_avail":"Offline",
+    "unit_of_meas":"°F",
+    "val_tpl":"{{value_json.temperature }}" }
+payloadHconfig={
+    "name":NAMEH,
+    "dev_cla":"humidity",
+    "stat_t":STATE,
+    "avty_t":LWT,
+    "pl_avail":"Online",
+    "pl_not_avail":"Offline",
+    "unit_of_meas":""%",",
+    "val_tpl":"{{ value_json.humidity }}" }
+
+print('Mosquitto STATE topic {0}'.format(STATE))
 
     #Log Message to start
 print('Logging sensor measurements to {0} every {1} seconds.'.format('Home Assistant', LOOP))
@@ -72,6 +93,8 @@ mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
 mqttc.connect(HOST, PORT, 60)
 mqttc.loop_start()
+mqttc.publish(CONFIG, payloadTconfig, 0, True)
+mqttc.publish(CONFIG, payloadHconfig, 0, True)
 mqttc.publish(LWT, 'Online', 0, True)
 
 '''
@@ -92,22 +115,9 @@ Configuration payload no2: {"device_class": "humidity", "name":
 
 Common state payload: { "temperature": 23.20, "humidity": 43.70 }
 
-    Configuration topic: homeassistant/switch/irrigation/config
-    Command topic: homeassistant/switch/irrigation/set
-    State topic: homeassistant/switch/irrigation/state
-    Configuration payload: {"~": "homeassistant/switch/irrigation", "name": "garden", "cmd_t": "~/set", "stat_t": "~/state"}
-
-    Configuration topic: homeassistant/switch/irrigation/config
-    State topic: homeassistant/switch/irrigation/state
-    Command topic: homeassistant/switch/irrigation/set
-    Payload: {"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}
-
-mosquitto_pub -h 127.0.0.1 -p 1883 -t "homeassistant/switch/irrigation/config" \
-  -m '{"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}'
-
-Set the state.
-
-mosquitto_pub -h 127.0.0.1 -p 1883 -t "homeassistant/switch/irrigation/set" -m ON
+homeassistant/sensor/295AB4_DS18S20_Id/config {"name":"gen-01 DS18S20 Id","stat_t":"~SENSOR","avty_t":"~LWT","pl_avail":"Online","pl_not_avail":"Offline","uniq_id":"295AB4_DS18S20_Id","device":{"identifiers":["295AB4"],"connections":[["mac","3C:71:BF:29:5A:B4"]]},"~":"gen-01/tele/","unit_of_meas":" ","val_tpl":"{{value_json['DS18S20'].Id}}"}
+homeassistant/sensor/295AB4_DS18S20_Temperature/config {"name":"gen-01 DS18S20 Temperature","stat_t":"~SENSOR","avty_t":"~LWT","pl_avail":"Online","pl_not_avail":"Offline","uniq_id":"295AB4_DS18S20_Temperature","device":{"identifiers":["295AB4"],"connections":[["mac","3C:71:BF:29:5A:B4"]]},"~":"gen-01/tele/","unit_of_meas":"°C","val_tpl":"{{value_json['DS18S20'].Temperature}}","dev_cla":"temperature"}
+homeassistant/sensor/295AB4_status/config {"name":"gen-01 status","stat_t":"~HASS_STATE","avty_t":"~LWT","pl_avail":"Online","pl_not_avail":"Offline","json_attributes_topic":"~HASS_STATE","unit_of_meas":" ","val_tpl":"{{value_json['RSSI']}}","ic":"mdi:information-outline","uniq_id":"295AB4_status","device":{"identifiers":["295AB4"],"connections":[["mac","3C:71:BF:29:5A:B4"]],"name":"gen-01","model":"Generic","sw_version":"7.1.1(sensors)","manufacturer":"Tasmota"},"~":"gen-01/tele/"}
 
 '''
 
@@ -122,47 +132,40 @@ try:
 
         currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
         print('Date Time:   {0}'.format(currentdate))
-        print('Temperature: {0:0.1f} F'.format(temp))
-        print('Humidity:    {0:0.1f} %'.format(humidity))
 
         # Publish to the MQTT channel
         try:
-            # mqttc.connect(HOST, PORT, 60)
-            # mqttc.publish(LWT, 'Online', 0, True)
+            payloadOut = { "temperature": temp, "humidity": humidity }
+            print('Updating {0} {1}'.format(STATE,payloadOut))
+            (result1,mid) = mqttc.publish(STATE, payloadOut, 0, True)
 
-            print('Updating {0}'.format(TEMP_TOPIC))
-            (result1,mid) = mqttc.publish(TEMP_TOPIC,temp,qos=0,retain=True)
-        
-            print('Updating {0}'.format(HUMI_TOPIC))
-            time.sleep(1)
-            (result2,mid) = mqttc.publish(HUMI_TOPIC,humidity,qos=0,retain=True)
-    
-            print('MQTT Updated result {0} and {1}'.format(result1,result2))
+            print('MQTT Update result {0}'.format(result1))
 
-            if result1 == 1 or result2 == 1:
-                raise ValueError('Result for a message was not 0')
-            # mqttc.disconnect()
+            if result1 == 1:
+                raise ValueError('Result message from MQTT was not 0')
 
         except Exception as e:
             # Error appending data, most likely because credentials are stale.
             #  disconnect and re-connect...
-            print('MQTT error, trying in again: ' + str(e))
+            print('MQTT error, trying re-connect: ' + str(e))
             mqttc.publish(LWT, 'Offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)
             mqttc.connect(HOST, PORT, 60)
             mqttc.loop_start()
+            mqttc.publish(CONFIG, payloadTconfig, 0, True)
+            mqttc.publish(CONFIG, payloadHconfig, 0, True)
             mqttc.publish(LWT, 'Online', 0, True)
             time.sleep(1)
             continue
 
-        # Wait 30 seconds before continuing (or your variable setting from command line)
-        print('Wrote a message to Home Assistant')
+        # Wait before continuing (your variable setting 'LOOP')
+        print('Sent values to Home Assistant')
         time.sleep(LOOP)
 
 except Exception as e:
-    print('Error connecting to the mqtt server: {0}'.format(e))
+    print('Unknown error: {0}'.format(e))
     mqttc.publish(LWT, 'Offline', 0, True)
     mqttc.loop_stop()
 

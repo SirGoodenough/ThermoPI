@@ -55,8 +55,11 @@ DHT_TYPE = Adafruit_DHT.AM2302
 DHT_PIN = MYs["PIN"]
 CONFIG = MYs["CONFIG"]
 STATE = MYs["STATE"]
+DEVICE = MYs["DEVICE"]
 NAMEH = MYs["NAMEH"]
+H_ID = MYs["H_ID"]
 NAMET = MYs["NAMET"]
+T_ID = MYs["T_ID"]
 LWT = MYs["LWT"]
 LOOP = MYs["LOOP"]
 HOST = MYs["HOST"]
@@ -65,6 +68,8 @@ USER = MYs["USER"]
 PWD = MYs["PWD"]
 payloadTconfig = {
     "name":NAMET,
+    "dev":"HUDU",
+    "uniq_id":"HUDU_Temperature",
     "dev_cla":"temperature",
     "stat_t":STATE,
     "avty_t":LWT,
@@ -74,6 +79,8 @@ payloadTconfig = {
     "val_tpl":"{{ value_json.temperature }}" }
 payloadHconfig = {
     "name":NAMEH,
+    "dev":"HUDU",
+    "uniq_id":"HUDU_Humidity",
     "dev_cla":"humidity",
     "stat_t":STATE,
     "avty_t":LWT,

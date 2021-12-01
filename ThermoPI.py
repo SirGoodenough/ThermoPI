@@ -71,7 +71,7 @@ payloadTconfig = {
     "pl_avail":"Online",
     "pl_not_avail":"Offline",
     "unit_of_meas":"°F",
-    "val_tpl":"{{value_json.temperature }}" }
+    "val_tpl":"{{ value_json.temperature }}" }
 payloadHconfig = {
     "name":NAMEH,
     "dev_cla":"humidity",

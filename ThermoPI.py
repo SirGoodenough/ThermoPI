@@ -47,7 +47,6 @@ import uuid
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
     MYs = yaml.safe_load(ymlfile)
 
-
 # Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302
 DHT_TYPE = Adafruit_DHT.AM2302
 # Example of sensor connected to Raspberry Pi pin 23
@@ -62,7 +61,7 @@ USER = MYs["USER"]
 PWD = MYs["PWD"]
 AREA = MYs["AREA"]
 
-# printing the value of unique MAC SN section address using uuid and getnode() function 
+# Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
 
 TOPIC = "homeassistant/sensor/"
@@ -191,7 +190,7 @@ try:
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')
     mqttc.publish(LWT, 'Offline', 1, True)
-    time.sleep(2)
+    time.sleep(1)
     mqttc.loop_stop()
     mqttc.disconnect()
     sys.exit()

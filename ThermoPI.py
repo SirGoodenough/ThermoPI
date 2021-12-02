@@ -131,7 +131,7 @@ payloadTconfig = {
 
 def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
-    mqttc.connect(HOST, PORT, CLOOP)
+    mqttc.connect(HOST, PORT, float(CLOOP))
     mqttc.loop_start()
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)

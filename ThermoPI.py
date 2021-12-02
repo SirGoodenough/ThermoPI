@@ -73,8 +73,8 @@ payloadTconfig = {
     "dev_cla":"temperature",
     "stat_t":STATE,
     "avty_t":LWT,
-    "pl_avail":"Online",
-    "pl_not_avail":"Offline",
+    "pl_avail":"online",
+    "pl_not_avail":"offline",
     "unit_of_meas":"°F",
     "val_tpl":"{{ value_json.temperature }}" }
 payloadHconfig = {
@@ -84,8 +84,8 @@ payloadHconfig = {
     "dev_cla":"humidity",
     "stat_t":STATE,
     "avty_t":LWT,
-    "pl_avail":"Online",
-    "pl_not_avail":"Offline",
+    "pl_avail":"online",
+    "pl_not_avail":"offline",
     "unit_of_meas":"%",
     "val_tpl":"{{ value_json.humidity }}" }
 
@@ -93,7 +93,7 @@ def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
-    mqttc.will_set(LWT, 'Online', 0, True)
+    mqttc.will_set(LWT, 'online', 0, True)
     mqttc.publish(CONFIG, json.dumps(payloadTconfig), 0, True)
     mqttc.publish(CONFIG, json.dumps(payloadHconfig), 0, True)
 
@@ -135,7 +135,7 @@ try:
             # Error appending data, most likely because credentials are stale.
             #  disconnect and re-connect...
             print('MQTT error, trying re-connect: ' + str(e))
-            mqttc.will_set(LWT, 'Offline', 0, True)
+            mqttc.will_set(LWT, 'offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)
@@ -149,7 +149,7 @@ try:
 
 except KeyboardInterrupt:
     print('Keyboard Interrupt')
-    mqttc.will_set(LWT, 'Offline', 0, True)
+    mqttc.will_set(LWT, 'offline', 0, True)
     mqttc.loop_stop()
     mqttc.disconnect()
     sys.exit()

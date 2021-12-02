@@ -60,21 +60,18 @@ USER = MYs["USER"]
 PWD = MYs["PWD"]
 STATE = MYs["STATE"]
 DEVICE = MYs["DEVICE"]
+LWT = MYs["LWT"]
 
 NAMEH = MYs["NAMEH"]
 H_ID = MYs["H_ID"]
 CONFIGH = MYs["CONFIGH"]
-LWT_H = MYs["LWT_H"]
 
 NAMET = MYs["NAMET"]
 T_ID = MYs["T_ID"]
 CONFIGT = MYs["CONFIGT"]
-LWT_T = MYs["LWT_T"]
 
 payloadHconfig = {
     "name":NAMEH,
-    "dev":DEVICE,
-    "uniq_id":H_ID,
     "dev_cla":"humidity",
     "stat_t":STATE,
     "avty_t":LWT_H,
@@ -85,8 +82,6 @@ payloadHconfig = {
 
 payloadTconfig = {
     "name":NAMET,
-    "dev":DEVICE,
-    "uniq_id":T_ID,
     "dev_cla":"temperature",
     "stat_t":STATE,
     "avty_t":LWT_T,
@@ -99,9 +94,8 @@ def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
-    mqttc.will_set(LWT_H, 'Online', 1, True)
+    mqttc.will_set(LWT, 'Online', 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
-    mqttc.will_set(LWT_T, 'Online', 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
 print('Mosquitto STATE topic {0}'.format(STATE))
@@ -142,8 +136,7 @@ try:
             # Error appending data, most likely because credentials are stale.
             #  disconnect and re-connect...
             print('MQTT error, trying re-connect: ' + str(e))
-            mqttc.will_set(LWT_H, 'Offline', 0, True)
-            mqttc.will_set(LWT_T, 'Offline', 0, True)
+            mqttc.will_set(LWT, 'Offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)
@@ -159,7 +152,6 @@ except KeyboardInterrupt:
     print('Keyboard Interrupt')
     # mqttc.will_set(LWT, 'offline', 0, True)
     mqttc.loop_stop()
-    mqttc.will_set(LWT_H, 'Offline', 1, True)
-    mqttc.will_set(LWT_T, 'Offline', 1, True)
+    mqttc.will_set(LWT, 'Offline', 1, True)
     mqttc.disconnect()
     sys.exit()

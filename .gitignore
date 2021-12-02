@@ -1,7 +1,8 @@
 # local stuff
 MYsecrets.yaml
 archive/
-**/.vscode
+.vscode/*
+.gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

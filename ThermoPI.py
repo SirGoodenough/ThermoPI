@@ -60,6 +60,7 @@ HOST = MYs["HOST"]
 PORT = MYs["PORT"]
 USER = MYs["USER"]
 PWD = MYs["PWD"]
+AREA = MYs["AREA"]
 
 # printing the value of unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -92,6 +93,7 @@ payloadHconfig = {
         DEVICE_ID
         ],
         "name": "ThermoPI",
+        'sa': AREA,
         "mf": "SirGoodenough",
         "mdl": "HomeAssistant Discovery for ThermoPI",
         "sw": "https://github.com/SirGoodenough/ThermoPI"
@@ -115,6 +117,7 @@ payloadTconfig = {
         DEVICE_ID
         ],
         "name": "ThermoPI",
+        'sa': AREA,
         "mf": "SirGoodenough",
         "mdl": "HomeAssistant Discovery for ThermoPI",
         "sw": "https://github.com/SirGoodenough/ThermoPI"

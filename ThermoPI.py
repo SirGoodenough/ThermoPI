@@ -62,7 +62,7 @@ USER = MYs["USER"]
 PWD = MYs["PWD"]
 
 # printing the value of unique MAC SN section address using uuid and getnode() function 
-DEVICE_ID = (hex(uuid.getnode())[-6:])
+DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
 
 TOPIC = "homeassistant/sensor/"
 

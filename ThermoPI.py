@@ -56,8 +56,6 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN  = 'P8_11'
 DHT_PIN = MYs["PIN"]
 LOOP = MYs["LOOP"]
-#CLOOP = int(LOOP) + 60
-CLOOP = 360
 HOST = MYs["HOST"]
 PORT = MYs["PORT"]
 USER = MYs["USER"]
@@ -132,7 +130,7 @@ payloadTconfig = {
 
 def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
-    mqttc.connect(HOST, PORT, 360)
+    mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
@@ -144,8 +142,8 @@ print('Mosquitto STATE topic {0}'.format(STATE))
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
 print('Press Ctrl-C to quit.')
 mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
+mqttc.disable_logger()
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
-#mqttc.will_set(LWT, 'OffLine', 1, True)
 mqttConnect()
 
 try:
@@ -178,6 +176,7 @@ try:
             #  disconnect and re-connect...
             print('MQTT error, trying re-connect: ' + str(e))
             mqttc.publish(LWT, 'Offline', 0, True)
+            time.sleep(2)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)

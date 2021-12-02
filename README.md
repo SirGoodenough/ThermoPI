@@ -1,11 +1,11 @@
 # ThermoPI
-Use a Raspberry PI connected to one or more temperature sensors to send the results to a MQTT server.
+Use a Raspberry PI connected to one or more temperature sensors to send the results to a MQTT server.  This is set-up for 1 temp/humid sensor so you will need to do some editing if you want to add more.  This at lease gives you the building blocks.
 
 ## USAGE:
-Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)
+Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)  Make sure the username that is going to be running this script has access to the files and is able to get at python and anything else needed and used here-in.
 
 You will need to rename the file ***MYsecretsSample.yaml*** to ***MYsecrets.yaml***.
-Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT installation and requirements.  You will also need to supply the full path to the secrets file in line 45 of the python code.
+Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT & Home Assistant installation and requirements.  You will also need to supply the full path to the secrets file in line 45 of this python code.
 
 To start the program looping, you can write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
 
@@ -13,9 +13,7 @@ To run the program at boot in order to get constant readings,
     see the Example-rc.local file and do something similar.
     There is also ThermoPI.service to run this as a service with load-service.sh there to set it up as a service. (preferred)
 
-The Python program itself is well documented.
-
-Program requirements (as written):  (Feel free to fork it & update the DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
+Program requirements (as written):  (Feel free to fork it & update the obsolete DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
 + Python 3.6 or better 
 + PyYAML        (https://pypi.org/project/PyYAML/)
 + Adafruit_DHT  (https://github.com/adafruit/Adafruit_Python_DHT)

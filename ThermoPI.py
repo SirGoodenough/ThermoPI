@@ -33,10 +33,7 @@
 # SOFTWARE.
 
 import Adafruit_DHT
-import datetime
-import io
 import paho.mqtt.client as mqtt
-import requests
 import sys
 import time
 import yaml

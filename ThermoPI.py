@@ -98,7 +98,7 @@ payloadHconfig = {
     },
     "unit_of_meas": "%",
     "dev_cla":"humidity",
-    "frc_upd": true,
+    "frc_upd": True,
     "val_tpl": "{{ value_json.humidity }}"
 }
 
@@ -121,7 +121,7 @@ payloadTconfig = {
     },
     "unit_of_meas":"°F",
     "dev_cla":"temperature",
-    "frc_upd": true,
+    "frc_upd": True,
     "val_tpl": "{{ value_json.temperature }}"
 }
 

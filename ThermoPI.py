@@ -41,12 +41,14 @@ import sys
 import time
 import yaml
 import json
+import uuid
 
 #  Get the parameter file
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
     MYs = yaml.safe_load(ymlfile)
 
-# Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302.
+
+# Type of sensor, can be Adafruit_DHT.DHT11, Adafruit_DHT.DHT22, or Adafruit_DHT.AM2302
 DHT_TYPE = Adafruit_DHT.AM2302
 # Example of sensor connected to Raspberry Pi pin 23
 #DHT_PIN = 23
@@ -58,39 +60,76 @@ HOST = MYs["HOST"]
 PORT = MYs["PORT"]
 USER = MYs["USER"]
 PWD = MYs["PWD"]
-STATE = MYs["STATE"]
-DEVICE = MYs["DEVICE"]
-LWT = MYs["LWT"]
+
+# printing the value of unique MAC SN section address using uuid and getnode() function 
+DEVICE_ID = (hex(uuid.getnode())[-6:])
+
+TOPIC = "homeassistant/sensor/"
+
+NAMED = MYs["DEVICE_NAME"]
+D_ID = DEVICE_ID + '_' + NAMED
+STATE = TOPIC + D_ID + '/state'
+LWT = TOPIC + D_ID + '/lwt'
 
 NAMEH = MYs["NAMEH"]
-H_ID = MYs["H_ID"]
-CONFIGH = MYs["CONFIGH"]
+H_ID =  DEVICE_ID + '_' + MYs["H_ID"]
+CONFIGH = TOPIC + H_ID + '/config'
 
 NAMET = MYs["NAMET"]
-T_ID = MYs["T_ID"]
-CONFIGT = MYs["CONFIGT"]
+T_ID = DEVICE_ID + '_' + MYs["T_ID"]
+CONFIGT = TOPIC + T_ID + '/config'
 
 payloadHconfig = {
-    "name":NAMEH,
-    "uniq_id":H_ID,
+    "name": NAMEH,
+    "stat_t": STATE,
+    "avty_t": LWT,
+    "pl_avail": "Online",
+    "pl_not_avail": "Offline",
+    "uniq_id": H_ID,
+    "dev": {
+        "ids": [
+        D_ID,
+        DEVICE_ID
+        ],
+        "name": "ThermoPI",
+        "mf": "SirGoodenough",
+        "mdl": "HomeAssistant Discovery for ThermoPI",
+        "sw": "https://github.com/SirGoodenough/ThermoPI"
+    },
+    "unit_of_meas": "%",
     "dev_cla":"humidity",
-    "stat_t":STATE,
-    "unit_of_meas":"%",
-    "val_tpl":"{{ value_json.humidity }}" }
+    "frc_upd": true,
+    "val_tpl": "{{ value_json.humidity }}"
+}
 
 payloadTconfig = {
-    "name":NAMET,
-    "uniq_id":T_ID,
-    "dev_cla":"temperature",
-    "stat_t":STATE,
+    "name": NAMET,
+    "stat_t": STATE,
+    "avty_t": LWT,
+    "pl_avail": "Online",
+    "pl_not_avail": "Offline",
+    "uniq_id": T_ID,
+    "dev": {
+        "ids": [
+        D_ID,
+        DEVICE_ID
+        ],
+        "name": "ThermoPI",
+        "mf": "SirGoodenough",
+        "mdl": "HomeAssistant Discovery for ThermoPI",
+        "sw": "https://github.com/SirGoodenough/ThermoPI"
+    },
     "unit_of_meas":"°F",
-    "val_tpl":"{{ value_json.temperature }}" }
+    "dev_cla":"temperature",
+    "frc_upd": true,
+    "val_tpl": "{{ value_json.temperature }}"
+}
 
 def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
-    #mqttc.will_set(LWT, 'Online', 1, True)
+    mqttc.will_set(LWT, 'Online', 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
@@ -132,7 +171,7 @@ try:
             # Error appending data, most likely because credentials are stale.
             #  disconnect and re-connect...
             print('MQTT error, trying re-connect: ' + str(e))
-            # mqttc.will_set(LWT, 'Offline', 0, True)
+            mqttc.will_set(LWT, 'Offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)
@@ -146,7 +185,7 @@ try:
 
 except KeyboardInterrupt:
     print('Keyboard Interrupt')
-    # mqttc.will_set(LWT, 'offline', `1`, True)
+    mqttc.will_set(LWT, 'Offline', 1, True)
     mqttc.loop_stop()
     mqttc.disconnect()
     sys.exit()

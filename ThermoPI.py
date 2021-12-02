@@ -107,26 +107,6 @@ mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttc.will_set(LWT, 'Offline', 0, True)
 mqttConnect()
 
-'''
-
-Configuration topic no1: homeassistant/sensor/sensorBedroomT/config
-Configuration payload no1: {"device_class": "temperature", "name":
- "Temperature", "state_topic": "homeassistant/sensor/sensorBedroom/state",
-  "unit_of_measurement": "°C", "value_template": "{{ value_json.temperature}}" }
-
-Configuration topic no2: homeassistant/sensor/sensorBedroomH/config
-Configuration payload no2: {"device_class": "humidity", "name":
- "Humidity", "state_topic": "homeassistant/sensor/sensorBedroom/state",
-  "unit_of_measurement": "%", "value_template": "{{ value_json.humidity}}" }
-
-Common state payload: { "temperature": 23.20, "humidity": 43.70 }
-
-homeassistant/sensor/295AB4_DS18S20_Id/config {"name":"gen-01 DS18S20 Id","stat_t":"~SENSOR","avty_t":"~LWT","pl_avail":"Online","pl_not_avail":"Offline","uniq_id":"295AB4_DS18S20_Id","device":{"identifiers":["295AB4"],"connections":[["mac","3C:71:BF:29:5A:B4"]]},"~":"gen-01/tele/","unit_of_meas":" ","val_tpl":"{{value_json['DS18S20'].Id}}"}
-homeassistant/sensor/295AB4_DS18S20_Temperature/config {"name":"gen-01 DS18S20 Temperature","stat_t":"~SENSOR","avty_t":"~LWT","pl_avail":"Online","pl_not_avail":"Offline","uniq_id":"295AB4_DS18S20_Temperature","device":{"identifiers":["295AB4"],"connections":[["mac","3C:71:BF:29:5A:B4"]]},"~":"gen-01/tele/","unit_of_meas":"°C","val_tpl":"{{value_json['DS18S20'].Temperature}}","dev_cla":"temperature"}
-homeassistant/sensor/295AB4_status/config {"name":"gen-01 status","stat_t":"~HASS_STATE","avty_t":"~LWT","pl_avail":"Online","pl_not_avail":"Offline","json_attributes_topic":"~HASS_STATE","unit_of_meas":" ","val_tpl":"{{value_json['RSSI']}}","ic":"mdi:information-outline","uniq_id":"295AB4_status","device":{"identifiers":["295AB4"],"connections":[["mac","3C:71:BF:29:5A:B4"]],"name":"gen-01","model":"Generic","sw_version":"7.1.1(sensors)","manufacturer":"Tasmota"},"~":"gen-01/tele/"}
-
-'''
-
 try:
 
     while True:

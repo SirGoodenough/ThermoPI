@@ -56,7 +56,7 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN  = 'P8_11'
 DHT_PIN = MYs["PIN"]
 LOOP = MYs["LOOP"]
-CLOOP = float(LOOP) + 60
+CLOOP = int(LOOP) + 60
 HOST = MYs["HOST"]
 PORT = MYs["PORT"]
 USER = MYs["USER"]
@@ -131,7 +131,7 @@ payloadTconfig = {
 
 def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
-    mqttc.connect(HOST, PORT, float(CLOOP))
+    mqttc.connect(HOST, PORT, CLOOP)
     mqttc.loop_start()
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)

@@ -86,7 +86,7 @@ payloadHconfig = {
     "avty_t":LWT,
     "pl_avail":"Online",
     "pl_not_avail":"Offline",
-    "unit_of_meas":""%",",
+    "unit_of_meas":"%",
     "val_tpl":"{{ value_json.humidity }}" }
 
 def mqttConnect():

@@ -53,49 +53,56 @@ DHT_TYPE = Adafruit_DHT.AM2302
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
 DHT_PIN = MYs["PIN"]
-CONFIG = MYs["CONFIG"]
-STATE = MYs["STATE"]
-DEVICE = MYs["DEVICE"]
-NAMEH = MYs["NAMEH"]
-H_ID = MYs["H_ID"]
-NAMET = MYs["NAMET"]
-T_ID = MYs["T_ID"]
-LWT = MYs["LWT"]
 LOOP = MYs["LOOP"]
 HOST = MYs["HOST"]
 PORT = MYs["PORT"]
 USER = MYs["USER"]
 PWD = MYs["PWD"]
-payloadTconfig = {
-    "name":NAMET,
-    "dev":DEVICE,
-    "uniq_id":T_ID,
-    "dev_cla":"temperature",
-    "stat_t":STATE,
-    "avty_t":LWT,
-    "pl_avail":"online",
-    "pl_not_avail":"offline",
-    "unit_of_meas":"°F",
-    "val_tpl":"{{ value_json.temperature }}" }
+STATE = MYs["STATE"]
+DEVICE = MYs["DEVICE"]
+
+NAMEH = MYs["NAMEH"]
+H_ID = MYs["H_ID"]
+CONFIGH = MYs["CONFIGH"]
+LWT_H = MYs["LWT_H"]
+
+NAMET = MYs["NAMET"]
+T_ID = MYs["T_ID"]
+CONFIGT = MYs["CONFIGT"]
+LWT_T = MYs["LWT_T"]
+
 payloadHconfig = {
     "name":NAMEH,
     "dev":DEVICE,
     "uniq_id":H_ID,
     "dev_cla":"humidity",
     "stat_t":STATE,
-    "avty_t":LWT,
-    "pl_avail":"online",
-    "pl_not_avail":"offline",
+    "avty_t":LWT_H,
+    "pl_avail":"Online",
+    "pl_not_avail":"Offline",
     "unit_of_meas":"%",
     "val_tpl":"{{ value_json.humidity }}" }
+
+payloadTconfig = {
+    "name":NAMET,
+    "dev":DEVICE,
+    "uniq_id":T_ID,
+    "dev_cla":"temperature",
+    "stat_t":STATE,
+    "avty_t":LWT_T,
+    "pl_avail":"Online",
+    "pl_not_avail":"Offline",
+    "unit_of_meas":"°F",
+    "val_tpl":"{{ value_json.temperature }}" }
 
 def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
-    mqttc.will_set(LWT, 'online', 0, True)
-    mqttc.publish(CONFIG, json.dumps(payloadTconfig), 0, True)
-    mqttc.publish(CONFIG, json.dumps(payloadHconfig), 0, True)
+    mqttc.will_set(LWT_H, 'Online', 1, True)
+    mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
+    mqttc.will_set(LWT_T, 'Online', 1, True)
+    mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
 print('Mosquitto STATE topic {0}'.format(STATE))
 
@@ -124,7 +131,7 @@ try:
                 "temperature": tempF,
                 "humidity": humidityOut}
             print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
-            (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 0, True)
+            (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
 
             print('MQTT Update result {0}'.format(result1))
 
@@ -135,7 +142,8 @@ try:
             # Error appending data, most likely because credentials are stale.
             #  disconnect and re-connect...
             print('MQTT error, trying re-connect: ' + str(e))
-            # mqttc.will_set(LWT, 'offline', 0, True)
+            mqttc.will_set(LWT_H, 'Offline', 0, True)
+            mqttc.will_set(LWT_T, 'Offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)
@@ -151,5 +159,7 @@ except KeyboardInterrupt:
     print('Keyboard Interrupt')
     # mqttc.will_set(LWT, 'offline', 0, True)
     mqttc.loop_stop()
+    mqttc.will_set(LWT_H, 'Offline', 1, True)
+    mqttc.will_set(LWT_T, 'Offline', 1, True)
     mqttc.disconnect()
     sys.exit()

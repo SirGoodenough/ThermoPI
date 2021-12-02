@@ -72,6 +72,7 @@ CONFIGT = MYs["CONFIGT"]
 
 payloadHconfig = {
     "name":NAMEH,
+    "uniq_id":H_ID,
     "dev_cla":"humidity",
     "stat_t":STATE,
     "avty_t":LWT,
@@ -82,6 +83,7 @@ payloadHconfig = {
 
 payloadTconfig = {
     "name":NAMET,
+    "uniq_id":T_ID,
     "dev_cla":"temperature",
     "stat_t":STATE,
     "avty_t":LWT,

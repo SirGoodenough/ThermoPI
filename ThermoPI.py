@@ -93,8 +93,8 @@ def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
-    mqttc.publish(CONFIG, payloadTconfig, 0, True)
-    mqttc.publish(CONFIG, payloadHconfig, 0, True)
+    mqttc.publish(CONFIG, json.dumps(payloadTconfig), 0, True)
+    mqttc.publish(CONFIG, json.dumps(payloadHconfig), 0, True)
     mqttc.publish(LWT, 'Online', 0, True)
 
 print('Mosquitto STATE topic {0}'.format(STATE))
@@ -144,8 +144,8 @@ try:
             payloadOut = {
                 "temperature": tempF,
                 "humidity": humidityOut}
-            print('Updating {0} {1}'.format(STATE,payloadOut))
-            (result1,mid) = mqttc.publish(STATE, payloadOut, 0, True)
+            print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
+            (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 0, True)
 
             print('MQTT Update result {0}'.format(result1))
 

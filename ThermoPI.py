@@ -185,8 +185,9 @@ try:
         time.sleep(LOOP)
 
 except KeyboardInterrupt:
-    print('Keyboard Interrupt')
-    mqttc.will_set(LWT, 'Offline', 1, True)
+    print(' Keyboard Interrupt. Closing MQTT.')
+    mqttc.publish(LWT, 'Offline', 1, True)
+    time.sleep(2)
     mqttc.loop_stop()
     mqttc.disconnect()
     sys.exit()

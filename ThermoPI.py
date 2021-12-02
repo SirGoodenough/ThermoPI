@@ -93,9 +93,9 @@ def mqttConnect():
     print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
+    mqttc.will_set(LWT, 'Online', 0, True)
     mqttc.publish(CONFIG, json.dumps(payloadTconfig), 0, True)
     mqttc.publish(CONFIG, json.dumps(payloadHconfig), 0, True)
-    mqttc.publish(LWT, 'Online', 0, True)
 
 print('Mosquitto STATE topic {0}'.format(STATE))
 
@@ -104,7 +104,6 @@ print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAM
 print('Press Ctrl-C to quit.')
 mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
-mqttc.will_set(LWT, 'Offline', 0, True)
 mqttConnect()
 
 try:
@@ -136,7 +135,7 @@ try:
             # Error appending data, most likely because credentials are stale.
             #  disconnect and re-connect...
             print('MQTT error, trying re-connect: ' + str(e))
-            mqttc.publish(LWT, 'Offline', 0, True)
+            mqttc.will_set(LWT, 'Offline', 0, True)
             mqttc.loop_stop()
             mqttc.disconnect()
             time.sleep(1)
@@ -150,7 +149,7 @@ try:
 
 except KeyboardInterrupt:
     print('Keyboard Interrupt')
-    mqttc.publish(LWT, 'Offline', 0, True)
+    mqttc.will_set(LWT, 'Offline', 0, True)
     mqttc.loop_stop()
     mqttc.disconnect()
     sys.exit()

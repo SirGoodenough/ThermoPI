@@ -177,6 +177,7 @@ try:
             mqttc.disconnect()
             time.sleep(1)
             mqttConnect()
+            pass
 
             continue
 

@@ -5,7 +5,15 @@ Use a Raspberry PI connected to one or more temperature sensors to send the resu
 Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)  Make sure the username that is going to be running this script has access to the files and is able to get at python and anything else needed and used here-in.
 
 You will need to rename the file ***MYsecretsSample.yaml*** to ***MYsecrets.yaml***.
-Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT & Home Assistant installation and requirements.  You will also need to supply the full path to the secrets file in line 45 of this python code.
+Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT & Home Assistant installation and requirements.  You will also need to supply the full path to the secrets file in the **Get the parameter file** section of this python code around line 45.
+
+## AUTO-Start:
+Here is a good reference on setting up a program to run from systemd. Use it to get familiar with the process.   
+
+[How-To Geek on 'Startup With Systemd'](https://www.howtogeek.com/687970/how-to-run-a-linux-program-at-startup-with-systemd/)
+
+The load-service.sh script will stop and scratch reload the service from the local repository (Once you get all the permissions happy).
+The thermRestart.sh is the script to quickly restart the process if needed during troubleshooting.  I found it helpful.
 
 To start the program looping, you can write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
 
@@ -13,11 +21,12 @@ To run the program at boot in order to get constant readings,
     see the Example-rc.local file and do something similar.
     There is also ThermoPI.service to run this as a service with load-service.sh there to set it up as a service. (preferred)
 
+## Requirements:
 Program requirements (as written):  (Feel free to fork it & update the obsolete DHT Libraries to CircuitPython DHT Libraries and dropping me a merge request...)
 + Python 3.6 or better 
-+ PyYAML        (https://pypi.org/project/PyYAML/)
-+ Adafruit_DHT  (https://github.com/adafruit/Adafruit_Python_DHT)
-+ Paho-MQTT     (https://pypi.org/project/paho-mqtt/)
++ [PyYAML](https://pypi.org/project/PyYAML/) For reading the YAML parameter file
++ [Adafruit_DHT](https://github.com/adafruit/Adafruit_Python_DHT) For temp / humid sensors (AM2302)
++ [paho-mqtt](https://pypi.org/project/paho-mqtt/) For MQTT broker connection
 
 If you have any questions, comments or additions be sure to add an issue and bring them up on my Discord Server: 
 

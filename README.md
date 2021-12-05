@@ -30,6 +30,9 @@ Program requirements (as written):  (Feel free to fork it & update the obsolete 
 
 If you have any questions, comments or additions be sure to add an issue and bring them up on my Discord Server: 
 
+This is the circuit used with this program:
+![Circuit Used with ThermoPI](ThermoPI.png)
+
 ## Contact Links:
 * [What are we Fixing Today Homepage](https://www.WhatAreWeFixing.Today/)
 * [YouYube Channel Link](https://bit.ly/WhatAreWeFixingTodaysYT)

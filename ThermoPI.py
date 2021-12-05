@@ -136,9 +136,9 @@ print('Mosquitto STATE topic {0}'.format(STATE))
 
     #Log Message to start
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
-print('Press Ctrl-C to quit.')  # Saves wear on SD card Memory.  Remove as needed for troubleshooting
+print('Press Ctrl-C to quit.')
 mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
-mqttc.disable_logger()
+mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for troubleshooting
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttConnect()
 

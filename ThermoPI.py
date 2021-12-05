@@ -137,7 +137,7 @@ print('Mosquitto STATE topic {0}'.format(STATE))
     #Log Message to start
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
 print('Press Ctrl-C to quit.')
-mqttc = mqtt.Client('python_pub', 'False', 'MQTTv311',)
+mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
 mqttc.disable_logger()
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttConnect()

@@ -1,15 +1,15 @@
 # ThermoPI
 
-Use a Raspberry PI connected to one or more temperature sensors to send the results to a MQTT server.  This is set-up for 1 temp/humid sensor so you will need to do some editing if you want to add more.  This at lease gives you the building blocks.
+Use a Raspberry PI connected to one or more temperature sensors to send the results to a MQTT server. This is set-up for 1 temp/humid sensor so you will need to do some editing if you want to add more. This at lease gives you the building blocks.
 
 ## USAGE
 
 Install the program into opt/ThermoPI or any suitable location. (Some people like /usr/local/bin instead of /opt)  Make sure the username that is going to be running this script has access to the files and is able to get at python and anything else needed and used here-in.
 
 You will need to rename the file ***MYsecretsSample.yaml*** to ***MYsecrets.yaml***.
-Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT & Home Assistant installation and requirements.  You will also need to supply the full path to the secrets file in the **Get the parameter file** section of this python code around line 45.
+Edit the contents of the new ***MYsecrets.yaml*** to match your MQTT & Home Assistant installation and requirements. You will also need to supply the full path to the secrets file in the **Get the parameter file** section of this python code around line 45.
 
-This program grabs the 2nd half of the MAC address to use as the device ID.  This only works consistantly when there is only 1 Ethernet interface configured or you have your multiple interfaces cloned to the same MAC Address.  For instance if it boots from WIFI, it will gram that MAC, and if it uses the Ethernet cable or a USB interface, it will grab that MAC.  You get my point.  This can be avoided by hard coding the DeviceID with the random and unique number of your choice.  Also I have not tested this with IP6 addresses.  If you have solutions to any of this, please share.
+This program grabs the 2nd half of the MAC address to use as the device ID. This only works consistantly when there is only 1 Ethernet interface configured or you have your multiple interfaces cloned to the same MAC Address. For instance if it boots from WIFI, it will grab that MAC, and if ituses the Ethernet cable or a USB interface, it will grab that MAC.  You get my point.  HA will discover a different Device based on which interface connects first. This can be avoided by hard coding the DeviceID with the random and unique number of your choice. Also I have not tested this with IP6 addresses. If you have solutions to any of this, please share.
 
 ## AUTO-Start
 
@@ -18,9 +18,9 @@ Here is a good reference on setting up a program to run from systemd. Use it to 
 [How-To Geek on 'Startup With Systemd'](https://www.howtogeek.com/687970/how-to-run-a-linux-program-at-startup-with-systemd/)
 
 The load-service.sh script will stop and scratch reload the service from the local repository (Once you get all the permissions happy).
-The thermRestart.sh is the script to quickly restart the process if needed during troubleshooting.  I found it helpful.
+The thermRestart.sh is the script to quickly restart the process if needed during troubleshooting. I found it helpful.
 
-To start the program looping, you can write a short script to call like the example give in gpio4.sh.  This script needs to be executable.
+To start the program looping, you can write a short script to call like the example give in gpio4.sh. This script needs to be executable.
 
 To run the program at boot in order to get constant readings,
     see the Example-rc.local file and do something similar.
@@ -58,6 +58,6 @@ This is the circuit used with this program:
 
 ⚠️ **DANGER OF ELECTROCUTION** ⚠️
 
-If your device connects to mains electricity (AC power) there is danger of electrocution if not installed properly. If you don't know how to install it, please call an electrician (***Beware:*** certain countries prohibit installation without a licensed electrician present). Remember: **SAFETY FIRST**. It is not worth the risk to yourself, your family and your home if you don't know exactly what you are doing. Never tinker or try to flash a device using the serial programming interface while it is connected to MAINS ELECTRICITY (AC power).
+If your device connects to mains electricity (AC power) there is danger of electrocution if not installed properly.If you don't know how to install it, please call an electrician (***Beware:*** certain countries prohibit installation without a licensed electrician present). Remember: **SAFETY FIRST**. It is not worth the risk to yourself, your family and your home if you don't know exactly what you are doing. Never tinker or try to flash a device using the serial programming interface while it is connected to MAINS ELECTRICITY (AC power).
 
 We don't take any responsibility nor liability for using this software nor for the installation or any tips, advice, videos, etc. given by any member of this site or any related site.

@@ -169,7 +169,7 @@ def on2connect(mqttc, userdata, flags, rc):
     # Subscribing in on2connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     # mqttc.subscribe("$SYS/#")
-    mqttc.subscribe( WHTOPIC )
+    mqttc.subscribe("ThermoPI/whSet")
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.

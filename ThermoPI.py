@@ -164,7 +164,7 @@ payloadTconfig = {
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
         print('Connecting to MQTT on {0} {1} with result code {2}.'.format(HOST,PORT,str(rc)))
-        mqttc.subscribe(("ThermoPI/whSet",0))
+        mqttc.subscribe((WHTOPIC,0))
         # mqttc.subscribe("$SYS/#")
     else:
         print('Bad connection Returned code= (0).'.format(rc))

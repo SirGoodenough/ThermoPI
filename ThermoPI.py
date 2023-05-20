@@ -178,8 +178,7 @@ def on2message(mqttc, userdata, msg):
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     #Handle Message
-    if (Topic == WHTOPIC and
-        isinstance(whSet, float) and
+    if (isinstance(whSet, float) and
         whSet <= TRANGEMAX and
         whSet >= TRANGEMIN
         ):

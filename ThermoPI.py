@@ -95,7 +95,7 @@ PWC = float(PWM0*2)
 # GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(SERVOPIN, GPIO.OUT)
-p = GPIO.PWM(SERVOPIN, PULSEFREQUENCY)
+srvo = GPIO.PWM(SERVOPIN, PULSEFREQUENCY)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -165,13 +165,11 @@ payloadTconfig = {
 
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
-        print('Connecting to MQTT on {0} {1} with result code {2}'.format(HOST,PORT,str(rc)))
+        print('Connecting to MQTT on {0} {1} with result code {2}.'.format(HOST,PORT,str(rc)))
+        mqttc.subscribe("ThermoPI/whSet")
+        # mqttc.subscribe("$SYS/#")
     else:
-        print("Bad connection Returned code=",rc)
-    # Subscribing in on2connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-    # mqttc.subscribe("$SYS/#")
-    mqttc.subscribe("ThermoPI/whSet")
+        print('Bad connection Returned code= (0).'.format(rc))
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
@@ -186,8 +184,6 @@ def mqttConnect():
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
-    # mqttc.subscribe( WHTOPIC )
-
 # Called whenever a message is published to a topic that you are subscribed to
 # Do any logic in a block like this
 def cmd_callback ( mqttc, UserData, Message ):
@@ -196,63 +192,22 @@ def cmd_callback ( mqttc, UserData, Message ):
     whSet = float(Message.payload)
 
     print ('Message: {0} from Topic: {1}'.format(whSet, Topic))
-    
+
     #Handle Message
     if  (
         isinstance(whSet, float) and
         whSet <= TRANGEMAX and
         whSet >= TRANGEMIN
         ):
-        p.start(PWC)
+        srvo.start(PWC)
         time.sleep(1)
         Angle = whSet
         print ('Setting Motor to Angle: {0}'.format(Angle))
         Duty = (Angle / 180) * PWC + PWM0
         # GPIO.output(7, True)
-        p.ChangeDutyCycle(Duty)
+        srvo.ChangeDutyCycle(Duty)
         time.sleep(1)
-
-        p.stop()
-
-def pushTempHumid():
-        # Attempt to get sensor reading.
-    humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
-
-    tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
-    humidityOut = round(humidity,1)         # Round to .1
-
-    currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
-    print('Date Time:   {0}'.format(currentdate))
-
-    # Publish to MQTT
-    try:
-        payloadOut = {
-            "temperature": tempF,
-            "humidity": humidityOut}
-        print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
-        (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
-
-        print('MQTT Update result {0}'.format(result1))
-
-        if result1 == 1:
-            raise ValueError('Result message from MQTT was not 0')
-
-    except Exception as e:
-        # Error appending data, most likely because credentials are stale.
-        #  disconnect and re-connect...
-        print('MQTT error, trying re-connect: ' + str(e))
-        mqttc.publish(LWT, 'Offline', 0, True)
-        time.sleep(2)
-        mqttc.loop_stop()
-        mqttc.disconnect()
-        time.sleep(1)
-        mqttConnect()
-        pass
-
-    # Wait before continuing (your variable setting 'LOOP')
-    print('Sent values to Home Assistant')
-    for i in range(LOOP):
-        time.sleep(1)
+        srvo.stop()
 
 # Log Message to start
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
@@ -264,7 +219,44 @@ mqttConnect()
 
 try:
     while True:
-        pushTempHumid
+        # Attempt to get sensor reading.
+        humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
+
+        tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
+        humidityOut = round(humidity,1)         # Round to .1
+
+        currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
+        print('Date Time:   {0}'.format(currentdate))
+
+        # Publish to MQTT
+        try:
+            payloadOut = {
+                "temperature": tempF,
+                "humidity": humidityOut}
+            print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
+            (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
+
+            print('MQTT Update result {0}'.format(result1))
+
+            if result1 == 1:
+                raise ValueError('Result message from MQTT was not 0')
+
+        except Exception as e:
+            # Error appending data, most likely because credentials are stale.
+            #  disconnect and re-connect...
+            print('MQTT error, trying re-connect: ' + str(e))
+            mqttc.publish(LWT, 'Offline', 0, True)
+            time.sleep(2)
+            mqttc.loop_stop()
+            mqttc.disconnect()
+            time.sleep(1)
+            mqttConnect()
+            pass
+
+        # Wait before continuing (your variable setting 'LOOP')
+        print('Sent values to Home Assistant')
+        for i in range(LOOP):
+            time.sleep(1)
 
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')

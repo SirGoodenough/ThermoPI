@@ -32,8 +32,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import threading
-import os
 import Adafruit_DHT
 import paho.mqtt.client as mqtt
 import sys
@@ -167,7 +165,7 @@ def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
         print('Connecting to MQTT on {0} {1} with result code {2}.'.format(HOST,PORT,str(rc)))
         mqttc.subscribe("ThermoPI/whSet")
-        # mqttc.subscribe("$SYS/#")
+        mqttc.subscribe("$SYS/#")
     else:
         print('Bad connection Returned code= (0).'.format(rc))
 

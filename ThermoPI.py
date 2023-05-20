@@ -8,11 +8,11 @@
 
 # DHT Sensor Data-logging to MQTT Temperature channel
 
-# Requies a Mosquitto Server Install On the destination.
+# Requires a Mosquitto Server Install On the destination.
 
 # Copyright (c) 2014 Adafruit Industries
 # Author: Tony DiCola
-# MQTT Encahncements: David Cole (2016)
+# MQTT Enhancements: David Cole (2016)
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ import time
 import yaml
 import json
 import uuid
+import RPi.GPIO as GPIO
 
 #  Get the parameter file
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
@@ -50,30 +51,66 @@ DHT_TYPE = Adafruit_DHT.AM2302
 #DHT_PIN = 23
 # Example of sensor connected to Beaglebone Black pin P8_11
 #DHT_PIN  = 'P8_11'
-DHT_PIN = MYs["PIN"]
-LOOP = MYs["LOOP"]
-HOST = MYs["HOST"]
-PORT = MYs["PORT"]
-USER = MYs["USER"]
-PWD = MYs["PWD"]
-AREA = MYs["AREA"]
+DHT_PIN = MYs["TEMP"]["PIN"]
+AREA = MYs["TEMP"]["AREA"]
+
+LOOP = MYs["MAIN"]["LOOP"]
+HOST = MYs["MAIN"]["HOST"]
+PORT = MYs["MAIN"]["PORT"]
+USER = MYs["MAIN"]["USER"]
+PWD = MYs["MAIN"]["PWD"]
+
+# GPIO Setup
+#   SERVOPIN - Pin on the raspberry pi that is controlling the servo
+#   WHTOPIC - Topic in the MQTT Broker to monitor for commands. (angle)
+#   PULSEFREQUENCY - Frequency of the pulses sent to the servo
+#                    The servo expects a pulse every 20ms for between 1ms and 2ms
+#                    1ms corresponds to an angle of 0 degrees, while a pulse of 2ms
+#                    corresponds to an angle of 180 degrees
+#                    - A value of 100(Hz) means that the Pi will send a pulse 100 times per 
+#                      second, or once every 10ms.
+#   PWM0 - The percentage of time that GPIO pin must be "ON" so that 
+#           the motor will turn to angle 0
+#           The equation for finding the Correct PWM0, or the pulse modulation 
+#                     Required to set the servo to angle 0 is:
+#                         DutyCycle = PW/T * 100%
+#                         D=1ms/20ms*100 = 5
+#           For the motor that you use this may have to be tweaked a bit.
+#   TRANGEMIN - For scaling MQTT command to the angle.
+#                   This is the temperature represented by servo at angle 0.
+#   TRANGEMAX - For scaling MQTT command to the angle.
+#                   This is the temperature represented by servo at angle 180.
+#
+SERVOPIN = MYs["WHCONTROL"]["SERVOPIN"]
+WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
+PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])  #100
+TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
+TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
+PWM0 = float(MYs["WHCONTROL"]["PWM0"])  #5
+PWC = float(PWM0*2)
+# Set the pinout type to board to use standard board labeling
+#
+# GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(SERVOPIN, GPIO.OUT)
+p = GPIO.PWM(SERVOPIN, PULSEFREQUENCY)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
 
 TOPIC = "homeassistant/sensor/"
 
-NAMED = MYs["DEVICE_NAME"]
+NAMED = MYs["TEMP"]["DEVICE_NAME"]
 D_ID = DEVICE_ID + '_' + NAMED
 STATE = TOPIC + D_ID + '/state'
 LWT = TOPIC + D_ID + '/lwt'
 
-NAMEH = MYs["NAMEH"]
-H_ID =  DEVICE_ID + '_' + MYs["H_ID"]
+NAMEH = MYs["TEMP"]["NAMEH"]
+H_ID =  DEVICE_ID + '_' + MYs["TEMP"]["H_ID"]
 CONFIGH = TOPIC + H_ID + '/config'
 
-NAMET = MYs["NAMET"]
-T_ID = DEVICE_ID + '_' + MYs["T_ID"]
+NAMET = MYs["TEMP"]["NAMET"]
+T_ID = DEVICE_ID + '_' + MYs["TEMP"]["T_ID"]
 CONFIGT = TOPIC + T_ID + '/config'
 
 payloadHconfig = {
@@ -124,15 +161,51 @@ payloadTconfig = {
     "val_tpl": "{{ value_json.temperature }}"
 }
 
+def on_connect(mqttc, userdata, flags, rc):
+    print('Connecting to MQTT on {0} {1} with result code {2}'.format(HOST,PORT,str(rc)))
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    # mqttc.subscribe("$SYS/#")
+    mqttc.subscribe( WHTOPIC )
+
+def on_message(mqttc, userdata, msg):
+    # The callback for when a PUBLISH message is received from the server.
+    print(msg.topic+" "+str(msg.payload))
+
 def mqttConnect():
-    print('Connecting to MQTT on {0} {1}'.format(HOST,PORT))
+    mqttc.on_connect = on_connect
+    mqttc.on_message = on_message
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
-print('Mosquitto STATE topic {0}'.format(STATE))
+# Called whenever a message is published to a topic that you are subscribed to
+# Do any logic in a block like this
+def cmd_callback ( Client, UserData, Message ):
+    # Parse the MQTT Message
+    Topic = Message.topic
+    whSet = float(Message.payload)
+
+    print ('Message: {0} from Topic: {1}'.format(whSet, Topic))
+    
+    #Handle Message
+    if  (
+        isinstance(whSet, float) and
+        whSet <= TRANGEMAX and
+        whSet >= TRANGEMIN
+        ):
+        p.start(PWC)
+        time.sleep(1)
+        Angle = whSet
+        print ('Setting Motor to Angle: {0}'.format(Angle))
+        Duty = (Angle / 180) * PWC + PWM0
+        # GPIO.output(7, True)
+        p.ChangeDutyCycle(Duty)
+        time.sleep(1)
+
+        p.stop()
 
     #Log Message to start
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
@@ -187,6 +260,7 @@ try:
 
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')
+    GPIO.cleanup()
     mqttc.publish(LWT, 'Offline', 1, True)
     time.sleep(1)
     mqttc.loop_stop()

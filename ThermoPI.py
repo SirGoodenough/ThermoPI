@@ -171,21 +171,23 @@ def on2connect(mqttc, userdata, flags, rc):
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
-    print(msg.topic+" "+str(msg.payload))
 
-    # Parse the MQTT Message
     Topic = msg.topic
-    whSet = float(msg.payload)
+    whSet = msg.payload
 
-    print ('Message: {0} from Topic: {1}'.format(whSet, Topic))
+    print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     #Handle Message
-    if (isinstance(whSet, float) and whSet <= TRANGEMAX and whSet >= TRANGEMIN):
+    if (Topic == WHTOPIC and
+        isinstance(whSet, float) and
+        whSet <= TRANGEMAX and
+        whSet >= TRANGEMIN
+        ):
 
         srvo.start(PWC)
         time.sleep(1)
-        Angle = whSet
-        print ('Setting Motor to Angle: {0}'.format(Angle))
+        Angle = float(whSet)
+        print (f"Setting Motor to Angle: {Angle}")
         Duty = (Angle / 180) * PWC + PWM0
         # GPIO.output(7, True)
         srvo.ChangeDutyCycle(Duty)

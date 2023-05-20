@@ -161,25 +161,30 @@ payloadTconfig = {
     "val_tpl": "{{ value_json.temperature }}"
 }
 
-def on_connect(mqttc, userdata, flags, rc):
-    print('Connecting to MQTT on {0} {1} with result code {2}'.format(HOST,PORT,str(rc)))
-    # Subscribing in on_connect() means that if we lose the connection and
+def on2connect(mqttc, userdata, flags, rc):
+    if rc==0
+        print('Connecting to MQTT on {0} {1} with result code {2}'.format(HOST,PORT,str(rc)))
+    else:
+        print("Bad connection Returned code=",rc)
+    # Subscribing in on2connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     # mqttc.subscribe("$SYS/#")
-    mqttc.subscribe( WHTOPIC )
+    #mqttc.subscribe( WHTOPIC )
 
-def on_message(mqttc, userdata, msg):
+def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
     print(msg.topic+" "+str(msg.payload))
 
 def mqttConnect():
-    mqttc.on_connect = on_connect
-    mqttc.on_message = on_message
+    mqttc.on_connect = on2connect
+    mqttc.on_message = on2message
     mqttc.connect(HOST, PORT, 60)
     mqttc.loop_start()
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
+
+    mqttc.subscribe( WHTOPIC )
 
 # Called whenever a message is published to a topic that you are subscribed to
 # Do any logic in a block like this

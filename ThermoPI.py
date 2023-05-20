@@ -32,6 +32,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import threading
+import os
 import Adafruit_DHT
 import paho.mqtt.client as mqtt
 import sys
@@ -212,17 +214,7 @@ def cmd_callback ( Client, UserData, Message ):
 
         p.stop()
 
-    #Log Message to start
-print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
-print('Press Ctrl-C to quit.')
-mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
-mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for troubleshooting
-mqttc.username_pw_set(USER, PWD) # deactivate if not needed
-mqttConnect()
-
-try:
-
-    while True:
+def pollTempHumid():
         # Attempt to get sensor reading.
         humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
 
@@ -264,6 +256,20 @@ try:
         for i in range(LOOP):
             time.sleep(1)
 
+
+
+    #Log Message to start
+print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
+print('Press Ctrl-C to quit.')
+mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
+mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for troubleshooting
+mqttc.username_pw_set(USER, PWD) # deactivate if not needed
+mqttConnect()
+
+if __name__ == "__main__":
+    t1 = threading.Thread(target=pollTempHumid, name='t1')
+    t1.start()
+
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')
     GPIO.cleanup()
@@ -271,4 +277,5 @@ except KeyboardInterrupt:
     time.sleep(1)
     mqttc.loop_stop()
     mqttc.disconnect()
+    t1.join()
     sys.exit()

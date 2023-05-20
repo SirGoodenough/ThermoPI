@@ -168,7 +168,7 @@ def on2connect(mqttc, userdata, flags, rc):
         print("Bad connection Returned code=",rc)
     # Subscribing in on2connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    mqttc.subscribe("$SYS/#")
+    # mqttc.subscribe("$SYS/#")
     mqttc.subscribe( WHTOPIC )
 
 def on2message(mqttc, userdata, msg):

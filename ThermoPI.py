@@ -168,8 +168,8 @@ def on2connect(mqttc, userdata, flags, rc):
         print("Bad connection Returned code=",rc)
     # Subscribing in on2connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    # mqttc.subscribe("$SYS/#")
-    #mqttc.subscribe( WHTOPIC )
+    mqttc.subscribe("$SYS/#")
+    mqttc.subscribe( WHTOPIC )
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
@@ -184,7 +184,7 @@ def mqttConnect():
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
-    mqttc.subscribe( WHTOPIC )
+    # mqttc.subscribe( WHTOPIC )
 
 # Called whenever a message is published to a topic that you are subscribed to
 # Do any logic in a block like this
@@ -261,7 +261,8 @@ try:
 
         # Wait before continuing (your variable setting 'LOOP')
         print('Sent values to Home Assistant')
-        time.sleep(LOOP)
+        for i in range(LOOP):
+            time.sleep(1)
 
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')

@@ -214,16 +214,8 @@ def cmd_callback ( mqttc, UserData, Message ):
 
         p.stop()
 
-    # Log Message to start
-print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
-print('Press Ctrl-C to quit.')
-mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
-mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for troubleshooting
-mqttc.username_pw_set(USER, PWD) # deactivate if not needed
-mqttConnect()
-
-try:
-    # Attempt to get sensor reading.
+def pushTempHumid():
+        # Attempt to get sensor reading.
     humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
 
     tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
@@ -263,6 +255,18 @@ try:
     print('Sent values to Home Assistant')
     for i in range(LOOP):
         time.sleep(1)
+
+# Log Message to start
+print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
+print('Press Ctrl-C to quit.')
+mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
+mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for troubleshooting
+mqttc.username_pw_set(USER, PWD) # deactivate if not needed
+mqttConnect()
+
+try:
+    while True:
+        pushTempHumid
 
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')

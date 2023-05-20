@@ -178,14 +178,11 @@ def on2message(mqttc, userdata, msg):
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     #Handle Message
-    if (isinstance(whSet, float) and
-        whSet <= TRANGEMAX and
-        whSet >= TRANGEMIN
-        ):
+    if ( isinstance(whSet, float) and whSet <= TRANGEMAX and whSet >= TRANGEMIN ):
 
         srvo.start(PWC)
         time.sleep(1)
-        Angle = float(whSet)
+        Angle = whSet
         print (f"Setting Motor to Angle: {Angle}")
         Duty = (Angle / 180) * PWC + PWM0
         # GPIO.output(7, True)

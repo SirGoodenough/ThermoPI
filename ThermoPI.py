@@ -189,7 +189,7 @@ def on2message(mqttc, userdata, msg):
         Angle = whSet
         print (f"Setting Motor to Angle: {Angle}")
         Duty = (Angle / 180) * PWC + PWM0
-        # GPIO.output(7, True)
+        srvo.output(7, True)
         srvo.ChangeDutyCycle(Duty)
         time.sleep(1)
         srvo.stop()

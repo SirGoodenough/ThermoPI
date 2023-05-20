@@ -164,7 +164,7 @@ payloadTconfig = {
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
         print('Connecting to MQTT on {0} {1} with result code {2}.'.format(HOST,PORT,str(rc)))
-        mqttc.subscribe("/ThermoPI/#")
+        mqttc.subscribe(("ThermoPI/whSet",0))
         # mqttc.subscribe("$SYS/#")
     else:
         print('Bad connection Returned code= (0).'.format(rc))
@@ -173,30 +173,15 @@ def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
     print(msg.topic+" "+str(msg.payload))
 
-def mqttConnect():
-    mqttc.on_connect = on2connect
-    mqttc.on_message = on2message
-    mqttc.connect(HOST, PORT, 60)
-    mqttc.loop_start()
-    mqttc.publish(LWT, "Online", 1, True)
-    mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
-    mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
-
-# Called whenever a message is published to a topic that you are subscribed to
-# Do any logic in a block like this
-def cmd_callback ( mqttc, UserData, Message ):
     # Parse the MQTT Message
-    Topic = Message.topic
-    whSet = float(Message.payload)
+    Topic = msg.topic
+    whSet = float(msg.payload)
 
     print ('Message: {0} from Topic: {1}'.format(whSet, Topic))
 
     #Handle Message
-    if  (
-        isinstance(whSet, float) and
-        whSet <= TRANGEMAX and
-        whSet >= TRANGEMIN
-        ):
+    if (isinstance(whSet, float) and whSet <= TRANGEMAX and whSet >= TRANGEMIN):
+
         srvo.start(PWC)
         time.sleep(1)
         Angle = whSet
@@ -206,6 +191,15 @@ def cmd_callback ( mqttc, UserData, Message ):
         srvo.ChangeDutyCycle(Duty)
         time.sleep(1)
         srvo.stop()
+
+def mqttConnect():
+    mqttc.on_connect = on2connect
+    mqttc.on_message = on2message
+    mqttc.connect(HOST, PORT, 60)
+    mqttc.loop_start()
+    mqttc.publish(LWT, "Online", 1, True)
+    mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
+    mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
 # Log Message to start
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))

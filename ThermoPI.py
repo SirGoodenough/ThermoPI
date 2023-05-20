@@ -81,7 +81,7 @@ PWD = MYs["MAIN"]["PWD"]
 #   TRANGEMAX - For scaling MQTT command to the angle.
 #                   This is the temperature represented by servo at angle 180.
 #
-SERVOPIN = MYs["WHCONTROL"]["SERVOPIN"]
+SERVOPIN = int(MYs["WHCONTROL"]["SERVOPIN"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])  #100
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])

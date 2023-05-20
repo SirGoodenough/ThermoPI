@@ -190,7 +190,7 @@ def mqttConnect():
 
 # Called whenever a message is published to a topic that you are subscribed to
 # Do any logic in a block like this
-def cmd_callback ( Client, UserData, Message ):
+def cmd_callback ( mqttc, UserData, Message ):
     # Parse the MQTT Message
     Topic = Message.topic
     whSet = float(Message.payload)
@@ -214,51 +214,7 @@ def cmd_callback ( Client, UserData, Message ):
 
         p.stop()
 
-def pollTempHumid():
-        # Attempt to get sensor reading.
-        humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
-
-        tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
-        humidityOut = round(humidity,1)         # Round to .1
-
-        currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
-        print('Date Time:   {0}'.format(currentdate))
-
-        # Publish to MQTT
-        try:
-            payloadOut = {
-                "temperature": tempF,
-                "humidity": humidityOut}
-            print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
-            (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
-
-            print('MQTT Update result {0}'.format(result1))
-
-            if result1 == 1:
-                raise ValueError('Result message from MQTT was not 0')
-
-        except Exception as e:
-            # Error appending data, most likely because credentials are stale.
-            #  disconnect and re-connect...
-            print('MQTT error, trying re-connect: ' + str(e))
-            mqttc.publish(LWT, 'Offline', 0, True)
-            time.sleep(2)
-            mqttc.loop_stop()
-            mqttc.disconnect()
-            time.sleep(1)
-            mqttConnect()
-            pass
-
-            continue
-
-        # Wait before continuing (your variable setting 'LOOP')
-        print('Sent values to Home Assistant')
-        for i in range(LOOP):
-            time.sleep(1)
-
-
-
-    #Log Message to start
+    # Log Message to start
 print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
 print('Press Ctrl-C to quit.')
 mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
@@ -266,9 +222,47 @@ mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for t
 mqttc.username_pw_set(USER, PWD) # deactivate if not needed
 mqttConnect()
 
-if __name__ == "__main__":
-    t1 = threading.Thread(target=pollTempHumid, name='t1')
-    t1.start()
+try:
+    # Attempt to get sensor reading.
+    humidity, tempC = Adafruit_DHT.read_retry(DHT_TYPE, DHT_PIN)
+
+    tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
+    humidityOut = round(humidity,1)         # Round to .1
+
+    currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
+    print('Date Time:   {0}'.format(currentdate))
+
+    # Publish to MQTT
+    try:
+        payloadOut = {
+            "temperature": tempF,
+            "humidity": humidityOut}
+        print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
+        (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
+
+        print('MQTT Update result {0}'.format(result1))
+
+        if result1 == 1:
+            raise ValueError('Result message from MQTT was not 0')
+
+    except Exception as e:
+        # Error appending data, most likely because credentials are stale.
+        #  disconnect and re-connect...
+        print('MQTT error, trying re-connect: ' + str(e))
+        mqttc.publish(LWT, 'Offline', 0, True)
+        time.sleep(2)
+        mqttc.loop_stop()
+        mqttc.disconnect()
+        time.sleep(1)
+        mqttConnect()
+        pass
+
+        continue
+
+    # Wait before continuing (your variable setting 'LOOP')
+    print('Sent values to Home Assistant')
+    for i in range(LOOP):
+        time.sleep(1)
 
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')
@@ -277,5 +271,4 @@ except KeyboardInterrupt:
     time.sleep(1)
     mqttc.loop_stop()
     mqttc.disconnect()
-    t1.join()
     sys.exit()

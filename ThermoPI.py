@@ -249,8 +249,6 @@ def pushTempHumid():
         mqttConnect()
         pass
 
-        continue
-
     # Wait before continuing (your variable setting 'LOOP')
     print('Sent values to Home Assistant')
     for i in range(LOOP):

@@ -178,7 +178,11 @@ def on2message(mqttc, userdata, msg):
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     #Handle Message
-    if ( isinstance(whSet, float) and whSet <= TRANGEMAX and whSet >= TRANGEMIN ):
+    if ( Topic == WHTOPIC and
+        isinstance(whSet, float) and
+        whSet <= TRANGEMAX and
+        whSet >= TRANGEMIN
+        ):
 
         srvo.start(PWC)
         time.sleep(1)

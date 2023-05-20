@@ -180,15 +180,15 @@ def on2message(mqttc, userdata, msg):
     #Handle Message
 #    if ( isinstance(whSet, float) and whSet <= TRANGEMAX and whSet >= TRANGEMIN ):
 
-        srvo.start(PWC)
-        time.sleep(1)
-        Angle = whSet
-        print (f"Setting Motor to Angle: {Angle}")
-        Duty = (Angle / 180) * PWC + PWM0
-        # GPIO.output(7, True)
-        srvo.ChangeDutyCycle(Duty)
-        time.sleep(1)
-        srvo.stop()
+    srvo.start(PWC)
+    time.sleep(1)
+    Angle = whSet
+    print (f"Setting Motor to Angle: {Angle}")
+    Duty = (Angle / 180) * PWC + PWM0
+    # GPIO.output(7, True)
+    srvo.ChangeDutyCycle(Duty)
+    time.sleep(1)
+    srvo.stop()
 
 def mqttConnect():
     mqttc.on_connect = on2connect

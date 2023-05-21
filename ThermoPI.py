@@ -233,7 +233,7 @@ try:
             payloadOut = {
                 "temperature": tempF,
                 "humidity": humidityOut}
-            print(f"Updating {STATE} {json.dumps(payloadOut)}'.format")
+            print(f"Updating {STATE} {json.dumps(payloadOut)}")
             (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
 
             print(f"MQTT Update result {result1}")

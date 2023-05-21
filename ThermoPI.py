@@ -97,6 +97,9 @@ GPIO.setup(chan_list, GPIO.OUT)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
+GPIO.output(RELAYGPIO, GPIO_ON)
+time.sleep(3)
+srvo.start(PWC)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -187,10 +190,6 @@ def on2message(mqttc, userdata, msg):
         whSet >= TRANGEMIN
         ):
 
-        GPIO.output(RELAYGPIO, GPIO_ON)
-        time.sleep(2)
-        srvo.start(PWC)
-        time.sleep(2)
         Angle = whSet
         print (f"Setting Motor to Angle: {Angle}")
         Duty = (Angle / 180) * PWC + PWM0
@@ -198,7 +197,7 @@ def on2message(mqttc, userdata, msg):
         print (f"duty: {Duty}")
         srvo.ChangeDutyCycle(Duty)
         time.sleep(2)
-        GPIO.output(RELAYGPIO, GPIO_OFF)
+        # GPIO.output(RELAYGPIO, GPIO_OFF)
 
 def mqttConnect():
     mqttc.on_connect = on2connect

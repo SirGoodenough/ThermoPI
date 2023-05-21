@@ -170,7 +170,7 @@ def on2connect(mqttc, userdata, flags, rc):
         mqttc.subscribe((WHTOPIC,0))
         # mqttc.subscribe("$SYS/#")
     else:
-        print(f"Bad connection Returned code= {str(rc).")
+        print(f"Bad connection Returned code= {str(rc)}.")
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.

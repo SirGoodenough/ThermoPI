@@ -82,17 +82,19 @@ PWD = MYs["MAIN"]["PWD"]
 #                   This is the temperature represented by servo at angle 180.
 #
 SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
+RELAYGPIO = int(MYs["WHCONTROL"]["RELAYGPIO"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])  #100
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
 TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
-PWM0 = float(MYs["WHCONTROL"]["PWM0"])  #5
+PWM0 = float(MYs["WHCONTROL"]["PWM0"])
 PWC = float(PWM0*2)
 # Set the pinout type to board to use standard board labeling
 #
-# GPIO.setwarnings(False)
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SERVOGPIO, GPIO.OUT)
+GPIO.setup(RELAYGPIO, GPIO.OUT)
 srvo = GPIO.PWM(SERVOGPIO, PULSEFREQUENCY)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
@@ -163,11 +165,11 @@ payloadTconfig = {
 
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
-        print('Connecting to MQTT on {0} {1} with result code {2}.'.format(HOST,PORT,str(rc)))
+        print(f"Connecting to MQTT on {HOST} {PORT} with result code {str(rc)}.")
         mqttc.subscribe((WHTOPIC,0))
         # mqttc.subscribe("$SYS/#")
     else:
-        print('Bad connection Returned code= (0).'.format(rc))
+        print(f"Bad connection Returned code= {str(rc).")
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
@@ -185,15 +187,14 @@ def on2message(mqttc, userdata, msg):
         ):
 
         srvo.start(PWC)
-        time.sleep(1)
+        time.sleep(2)
         Angle = whSet
         print (f"Setting Motor to Angle: {Angle}")
         Duty = (Angle / 180) * PWC + PWM0
         # GPIO.output(SERVOGPIO, True)
         print (f"duty: {Duty}")
         srvo.ChangeDutyCycle(Duty)
-        time.sleep(1)
-        srvo.stop()
+        time.sleep(2)
 
 def mqttConnect():
     mqttc.on_connect = on2connect
@@ -205,7 +206,7 @@ def mqttConnect():
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
 
 # Log Message to start
-print('Logging sensor measurements from {0} & {1} every {2} seconds.'.format(NAMET, NAMEH, LOOP))
+print(f"Logging sensor measurements from {NAMET} & {NAMEH} every {LOOP} seconds.")
 print('Press Ctrl-C to quit.')
 mqttc = mqtt.Client(D_ID, 'False', 'MQTTv311',)
 mqttc.disable_logger()   # Saves wear on SD card Memory.  Remove as needed for troubleshooting
@@ -221,17 +222,17 @@ try:
         humidityOut = round(humidity,1)         # Round to .1
 
         currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
-        print('Date Time:   {0}'.format(currentdate))
+        print(f"Date Time:   {currentdate}")
 
         # Publish to MQTT
         try:
             payloadOut = {
                 "temperature": tempF,
                 "humidity": humidityOut}
-            print('Updating {0} {1}'.format(STATE,json.dumps(payloadOut) ) )
+            print(f"Updating {STATE} {json.dumps(payloadOut)}'.format")
             (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
 
-            print('MQTT Update result {0}'.format(result1))
+            print(f"MQTT Update result {result1}")
 
             if result1 == 1:
                 raise ValueError('Result message from MQTT was not 0')
@@ -260,5 +261,6 @@ except KeyboardInterrupt:
     time.sleep(1)
     mqttc.loop_stop()
     mqttc.disconnect()
+    srvo.stop()
     GPIO.cleanup()
     sys.exit()

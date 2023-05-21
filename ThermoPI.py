@@ -61,7 +61,7 @@ USER = MYs["MAIN"]["USER"]
 PWD = MYs["MAIN"]["PWD"]
 
 # GPIO Setup
-#   SERVOPIN - Pin on the raspberry pi that is controlling the servo
+#   SERVOGPIO - Pin on the raspberry pi that is controlling the servo
 #   WHTOPIC - Topic in the MQTT Broker to monitor for commands. (angle)
 #   PULSEFREQUENCY - Frequency of the pulses sent to the servo
 #                    The servo expects a pulse every 20ms for between 1ms and 2ms
@@ -81,7 +81,7 @@ PWD = MYs["MAIN"]["PWD"]
 #   TRANGEMAX - For scaling MQTT command to the angle.
 #                   This is the temperature represented by servo at angle 180.
 #
-SERVOPIN = int(MYs["WHCONTROL"]["SERVOPIN"])
+SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])  #100
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
@@ -91,9 +91,9 @@ PWC = float(PWM0*2)
 # Set the pinout type to board to use standard board labeling
 #
 # GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(SERVOPIN, GPIO.OUT)
-srvo = GPIO.PWM(SERVOPIN, PULSEFREQUENCY)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(SERVOGPIO, GPIO.OUT)
+srvo = GPIO.PWM(SERVOGPIO, PULSEFREQUENCY)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -189,7 +189,7 @@ def on2message(mqttc, userdata, msg):
         Angle = whSet
         print (f"Setting Motor to Angle: {Angle}")
         Duty = (Angle / 180) * PWC + PWM0
-        # GPIO.output(SERVOPIN, True)
+        # GPIO.output(SERVOGPIO, True)
         print (f"duty: {Duty}")
         srvo.ChangeDutyCycle(Duty)
         time.sleep(1)

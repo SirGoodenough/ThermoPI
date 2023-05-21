@@ -90,11 +90,11 @@ TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
 PWM0 = float(MYs["WHCONTROL"]["PWM0"])
 PWC = float(PWM0*2)
 # Set the pinout type to board to use standard board labeling
+chan_list = [SERVOGPIO,RELAYGPIO]
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
-chan_list = [SERVOGPIO,RELAYGPIO] 
 GPIO.setup(chan_list, GPIO.OUT)
+srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
 

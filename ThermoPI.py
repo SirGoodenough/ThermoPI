@@ -90,12 +90,13 @@ TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
 PWM0 = float(MYs["WHCONTROL"]["PWM0"])
 PWC = float(PWM0*2)
 # Set the pinout type to board to use standard board labeling
-#
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(SERVOGPIO, GPIO.OUT)
-GPIO.setup(RELAYGPIO, GPIO.OUT)
-srvo = GPIO.PWM(SERVOGPIO, PULSEFREQUENCY)
+srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
+chan_list = [SERVOGPIO,RELAYGPIO] 
+GPIO.setup(chan_list, GPIO.OUT)
+GPIO_ON = GPIO.HIGH
+GPIO_OFF = GPIO.LOW
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -179,13 +180,15 @@ def on2message(mqttc, userdata, msg):
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
-    #Handle Message
+    # Handle Message
     if ( Topic == WHTOPIC and
         isinstance(whSet, float) and
         whSet <= TRANGEMAX and
         whSet >= TRANGEMIN
         ):
 
+        GPIO.output(RELAYGPIO, GPIO_ON)
+        time.sleep(2)
         srvo.start(PWC)
         time.sleep(2)
         Angle = whSet
@@ -195,6 +198,7 @@ def on2message(mqttc, userdata, msg):
         print (f"duty: {Duty}")
         srvo.ChangeDutyCycle(Duty)
         time.sleep(2)
+        GPIO.output(RELAYGPIO, GPIO_OFF)
 
 def mqttConnect():
     mqttc.on_connect = on2connect

@@ -41,6 +41,7 @@ import yaml
 import json
 import uuid
 import RPi.GPIO as GPIO
+from struct import *
 
 #  Get the parameter file
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
@@ -157,9 +158,9 @@ def on2message(mqttc, userdata, msg):
 
 
     Topic = msg.topic
-    whSet = int.from_bytes(msg.payload, "little")
+    whSet = unpack('>h',msg.payload)
 
-    print (f"Message: {whSet} from Topic: {Topic}")
+    print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and

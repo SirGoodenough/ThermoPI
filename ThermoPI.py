@@ -153,19 +153,21 @@ def on2connect(mqttc, userdata, flags, rc):
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
-
+    from string import digits
     Topic = msg.topic
-    whSet = msg.payload
+    payload = msg.payload
+
+    whSet = ''.join(c for c in payload if c in digits)
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and
-        isinstance(whSet, float) and
-        whSet <= TRANGEMAX and
-        whSet >= TRANGEMIN
+        isinstance(whSet, int) and
+        int(whSet) <= TRANGEMAX and
+        int(whSet) >= TRANGEMIN
         ):
-        SetAngle(float(whSet))
+        SetAngle(int(whSet))
 
 def SetAngle(angle):
     duty = angle / 27 + PWM0

@@ -156,7 +156,6 @@ def on2connect(mqttc, userdata, flags, rc):
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
-
     Topic = msg.topic
     whSet = unpack('>h',msg.payload)
 

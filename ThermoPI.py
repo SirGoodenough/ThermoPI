@@ -97,7 +97,6 @@ GPIO.setup(chan_list, GPIO.OUT)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
-GPIO.output(RELAYGPIO, GPIO_ON)
 time.sleep(3)
 srvo.start(PWC)
 
@@ -189,16 +188,22 @@ def on2message(mqttc, userdata, msg):
         whSet <= TRANGEMAX and
         whSet >= TRANGEMIN
         ):
-
-        Angle = whSet
-        print (f"Setting Motor to Angle: {Angle}")
-        Duty = (Angle / 180) * PWC + PWM0
-        # GPIO.output(SERVOGPIO, True)
-        print (f"duty: {Duty}")
-        srvo.ChangeDutyCycle(Duty)
-        time.sleep(2)
+        GPIO.output(RELAYGPIO, GPIO_ON)
+        SetAngle(float(whSet))
         # GPIO.output(RELAYGPIO, GPIO_OFF)
 
+def SetAngle(angle):
+
+    duty = angle / 18 + PWM0
+
+    GPIO.output(SERVOGPIO, True)
+    srvo.ChangeDutyCycle(duty)
+    time.sleep(2)
+    GPIO.output(SERVOGPIO, False)
+    srvo.ChangeDutyCycle(0)
+
+    print (f"Setting angle: {angle} duty: {duty}")
+        
 def mqttConnect():
     mqttc.on_connect = on2connect
     mqttc.on_message = on2message

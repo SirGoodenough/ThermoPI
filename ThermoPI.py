@@ -190,7 +190,7 @@ def on2message(mqttc, userdata, msg):
         SetAngle(float(whSet))
 
 def SetAngle(angle):
-    duty = angle / 18 + PWM0
+    duty = angle / 27 + PWM0
 
     GPIO.output(SERVOGPIO, GPIO_ON)
     srvo.ChangeDutyCycle(duty)

@@ -189,8 +189,12 @@ def on2message(mqttc, userdata, msg):
         whSet >= TRANGEMIN
         ):
         GPIO.output(RELAYGPIO, GPIO_ON)
+        time.sleep(2)
+
         SetAngle(float(whSet))
-        # GPIO.output(RELAYGPIO, GPIO_OFF)
+
+        time.sleep(2)
+        GPIO.output(RELAYGPIO, GPIO_OFF)
 
 def SetAngle(angle):
 

@@ -157,7 +157,7 @@ def on2message(mqttc, userdata, msg):
     Topic = msg.topic
     whSet = int(msg.payload)
 
-    print (f"Message: {str(whSet)} from Topic: {Topic}")
+    print (f"Message: {str(msg)}")
 
     # Handle Message
     if ( Topic == WHTOPIC and

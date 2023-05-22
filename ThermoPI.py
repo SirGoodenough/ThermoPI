@@ -34,6 +34,7 @@
 
 import Adafruit_DHT
 import paho.mqtt.client as mqtt
+import re 
 import sys
 import time
 import yaml
@@ -154,14 +155,15 @@ def on2connect(mqttc, userdata, flags, rc):
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
-    print (f"Message: {(msg.payload)} from Topic: {msg.topic}")
 
     Topic = msg.topic
-    whSet = int(msg.payload)
+    whSet = (re.findall(r"(\d+)\.", msg.payload))
+
+    print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and
-        isinstance(whSet, float) and
+        isinstance(whSet, int) and
         int(whSet) <= TRANGEMAX and
         int(whSet) >= TRANGEMIN
         ):

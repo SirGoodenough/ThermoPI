@@ -82,18 +82,17 @@ PWD = MYs["MAIN"]["PWD"]
 #                   This is the temperature represented by servo at angle 180.
 #
 SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
-RELAYGPIO = int(MYs["WHCONTROL"]["RELAYGPIO"])
+TSTATGPIO = int(MYs["WHCONTROL"]["TSTATGPIO"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
-PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])  #100
+PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
+SERVORANGE = int(MYs["WHCONTROL"]["SERVORANGE"])
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
 TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
 PWM0 = float(MYs["WHCONTROL"]["PWM0"])
-PWC = float(PWM0*2)
-# Set the pinout type to board to use standard board labeling
-chan_list = [SERVOGPIO,RELAYGPIO]
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(chan_list, GPIO.OUT)
+GPIO.setup(SERVOGPIO, GPIO.OUT)
+GPIO.setup(TSTATGPIO, GPIO.IN)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
@@ -190,7 +189,7 @@ def on2message(mqttc, userdata, msg):
         SetAngle(float(whSet))
 
 def SetAngle(angle):
-    duty = angle / 27 + PWM0
+    duty = angle / (SERVORANGE/10) + PWM0
 
     GPIO.output(SERVOGPIO, GPIO_ON)
     srvo.ChangeDutyCycle(duty)
@@ -198,7 +197,7 @@ def SetAngle(angle):
     GPIO.output(SERVOGPIO, GPIO_OFF)
     srvo.ChangeDutyCycle(0)
     print (f"Set angle: {angle} duty: {duty}")
-        
+
 def mqttConnect():
     mqttc.on_connect = on2connect
     mqttc.on_message = on2message

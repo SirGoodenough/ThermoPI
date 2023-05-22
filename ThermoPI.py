@@ -157,13 +157,13 @@ def on2message(mqttc, userdata, msg):
 
 
     Topic = msg.topic
-    whSet = re.findall(r"\d+",str(re.findall(r"(\d+)\.", str(msg.payload))))
+    whSet = re.findall(r"(\d+)\.", str(msg.payload))
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and
-        isinstance(whSet, int) and
+        isinstance(whSet, float) and
         int(whSet) <= TRANGEMAX and
         int(whSet) >= TRANGEMIN
         ):

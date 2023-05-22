@@ -85,7 +85,6 @@ SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
 TSTATGPIO = int(MYs["WHCONTROL"]["TSTATGPIO"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
-SERVORANGE = int(MYs["WHCONTROL"]["SERVORANGE"])
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
 TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
 PWM0 = float(MYs["WHCONTROL"]["PWM0"])
@@ -189,7 +188,7 @@ def on2message(mqttc, userdata, msg):
         SetAngle(float(whSet))
 
 def SetAngle(angle):
-    duty = angle / (SERVORANGE/10) + PWM0
+    duty = angle / 27 + PWM0
 
     GPIO.output(SERVOGPIO, GPIO_ON)
     srvo.ChangeDutyCycle(duty)

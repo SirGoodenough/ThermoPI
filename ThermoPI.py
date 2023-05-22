@@ -155,7 +155,7 @@ def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
     Topic = msg.topic
-    whSet = float(msg.payload)
+    whSet = msg.payload
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
@@ -237,7 +237,6 @@ try:
 
 except KeyboardInterrupt:
     print(' Keyboard Interrupt. Closing MQTT.')
-    GPIO.cleanup()
     mqttc.publish(LWT, 'Offline', 1, True)
     time.sleep(1)
     mqttc.loop_stop()

@@ -154,7 +154,7 @@ def on2connect(mqttc, userdata, flags, rc):
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
-    print (f"Message: {str(whSet)} from Topic: {Topic}")
+    print (f"Message: {(msg.payload)} from Topic: {msg.topic}")
 
     Topic = msg.topic
     whSet = int(msg.payload)

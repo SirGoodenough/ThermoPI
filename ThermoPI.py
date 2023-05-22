@@ -159,7 +159,7 @@ def on2message(mqttc, userdata, msg):
     Topic = msg.topic
     whSet = re.findall(r"(\d+)\.", str(msg.payload))
 
-    print (f"Message: {str(whSet)} from Topic: {Topic}")
+    print (f"Message: {whSet} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and

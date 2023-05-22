@@ -153,17 +153,15 @@ def on2connect(mqttc, userdata, flags, rc):
 
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
-    from string import digits
-    Topic = msg.topic
-    payload = msg.payload
 
-    whSet = ''.join(c for c in payload if c in digits)
+    Topic = msg.topic
+    whSet = int(msg.payload)
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and
-        isinstance(whSet, int) and
+        isinstance(whSet, float) and
         int(whSet) <= TRANGEMAX and
         int(whSet) >= TRANGEMIN
         ):

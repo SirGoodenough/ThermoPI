@@ -264,6 +264,5 @@ except KeyboardInterrupt:
     time.sleep(1)
     mqttc.loop_stop()
     mqttc.disconnect()
-    srvo.stop()
     GPIO.cleanup()
     sys.exit()

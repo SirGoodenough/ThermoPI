@@ -97,7 +97,6 @@ GPIO.setup(chan_list, GPIO.OUT)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
-time.sleep(3)
 srvo.start(PWC)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
@@ -188,25 +187,17 @@ def on2message(mqttc, userdata, msg):
         whSet <= TRANGEMAX and
         whSet >= TRANGEMIN
         ):
-        GPIO.output(RELAYGPIO, GPIO_ON)
-        time.sleep(2)
-
         SetAngle(float(whSet))
 
-        time.sleep(2)
-        GPIO.output(RELAYGPIO, GPIO_OFF)
-
 def SetAngle(angle):
-
     duty = angle / 18 + PWM0
 
-    GPIO.output(SERVOGPIO, True)
+    GPIO.output(SERVOGPIO, GPIO_ON)
     srvo.ChangeDutyCycle(duty)
     time.sleep(2)
-    GPIO.output(SERVOGPIO, False)
+    GPIO.output(SERVOGPIO, GPIO_OFF)
     srvo.ChangeDutyCycle(0)
-
-    print (f"Setting angle: {angle} duty: {duty}")
+    print (f"Set angle: {angle} duty: {duty}")
         
 def mqttConnect():
     mqttc.on_connect = on2connect

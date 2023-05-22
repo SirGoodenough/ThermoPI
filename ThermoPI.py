@@ -61,40 +61,20 @@ USER = MYs["MAIN"]["USER"]
 PWD = MYs["MAIN"]["PWD"]
 
 # GPIO Setup
-#   SERVOGPIO - Pin on the raspberry pi that is controlling the servo
-#   WHTOPIC - Topic in the MQTT Broker to monitor for commands. (angle)
-#   PULSEFREQUENCY - Frequency of the pulses sent to the servo
-#                    The servo expects a pulse every 20ms for between 1ms and 2ms
-#                    1ms corresponds to an angle of 0 degrees, while a pulse of 2ms
-#                    corresponds to an angle of 180 degrees
-#                    - A value of 100(Hz) means that the Pi will send a pulse 100 times per 
-#                      second, or once every 10ms.
-#   PWM0 - The percentage of time that GPIO pin must be "ON" so that 
-#           the motor will turn to angle 0
-#           The equation for finding the Correct PWM0, or the pulse modulation 
-#                     Required to set the servo to angle 0 is:
-#                         DutyCycle = PW/T * 100%
-#                         D=1ms/20ms*100 = 5
-#           For the motor that you use this may have to be tweaked a bit.
-#   TRANGEMIN - For scaling MQTT command to the angle.
-#                   This is the temperature represented by servo at angle 0.
-#   TRANGEMAX - For scaling MQTT command to the angle.
-#                   This is the temperature represented by servo at angle 180.
-#
-SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
-TSTATGPIO = int(MYs["WHCONTROL"]["TSTATGPIO"])
-WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
-PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
-TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
-TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
-PWM0 = float(MYs["WHCONTROL"]["PWM0"])
+global SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
+global TSTATGPIO = int(MYs["WHCONTROL"]["TSTATGPIO"])
+global WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
+global PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
+global TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
+global TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
+global PWM0 = float(MYs["WHCONTROL"]["PWM0"])
+global GPIO_ON = GPIO.HIGH
+global GPIO_OFF = GPIO.LOW
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SERVOGPIO, GPIO.OUT)
 GPIO.setup(TSTATGPIO, GPIO.IN)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
-GPIO_ON = GPIO.HIGH
-GPIO_OFF = GPIO.LOW
 srvo.start(0)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 

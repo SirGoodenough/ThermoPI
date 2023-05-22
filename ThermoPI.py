@@ -96,7 +96,7 @@ GPIO.setup(TSTATGPIO, GPIO.IN)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
-srvo.start(PWC)
+srvo.start(PWM0+5)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -236,7 +236,7 @@ try:
 
             print(f"MQTT Update result {result1}")
 
-            if result1 == 1:
+            if result1 != 0:
                 raise ValueError('Result message from MQTT was not 0')
 
         except Exception as e:

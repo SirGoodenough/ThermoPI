@@ -227,7 +227,7 @@ def mqttConnect():
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
-    mqttc.publish(CONFIGTstat, json.dumps(payloadTconfig), 1, True)
+    mqttc.publish(CONFIGTstat, json.dumps(payloadTstatconfig), 1, True)
 
 # Log Message to start
 print(f"Logging sensor measurements from {NAMET} & {NAMEH} every {LOOP} seconds.")

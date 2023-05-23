@@ -123,7 +123,7 @@ payloadHconfig = {
     },
     "unit_of_meas": "%",
     "dev_cla":"humidity",
-    "frc_upd": True,STATEBS
+    "frc_upd": True,
     "val_tpl": "{{ value_json.humidity }}"
 }
 

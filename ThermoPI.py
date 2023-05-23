@@ -174,7 +174,7 @@ def on2message(mqttc, userdata, msg):
         # Scale the Temperature range to the angle. My servo is 270 degrees.
         tScaled = whTSet - TRANGEMIN    # Number degrees from start point.
         whASet = tScaled * (SERVOANGLE/tRange) # Scaled angle
-        SetAngle(whASet)
+        SetAngle(270 - whASet)
 
 def SetAngle(angle):
     duty = angle / 27 + PWM0

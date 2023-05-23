@@ -145,6 +145,10 @@ payloadTconfig = {
     "val_tpl": "{{ value_json.temperature }}"
 }
 
+def only_numerics(seq):
+    seq_type= type(seq)
+    return seq_type().join(filter(seq_type.isdigit, seq))
+
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
         print(f"Connecting to MQTT on {HOST} {PORT} with result code {str(rc)}.")
@@ -157,7 +161,7 @@ def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
     Topic = msg.topic
-    whSet = unpack('>l',msg.payload)
+    whSet = only_numerics(msg.payload)
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 

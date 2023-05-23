@@ -67,6 +67,7 @@ WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
 TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
+DIRECTION = MYs["WHCONTROL"]["DIRECTION"]
 SERVOANGLE = float(MYs["WHCONTROL"]["SERVOANGLE"])
 PWM0 = float(MYs["WHCONTROL"]["PWM0"])
 GPIO_ON = GPIO.HIGH
@@ -171,13 +172,16 @@ def on2message(mqttc, userdata, msg):
         int(whTSet) <= TRANGEMAX and
         int(whTSet) >= TRANGEMIN
         ):
-        # Scale the Temperature range to the angle. My servo is 270 degrees.
-        tScaled = whTSet - TRANGEMIN    # Number degrees from start point.
+        # Scale the Temperature range to the angle
+        tScaled = whTSet - TRANGEMIN    # Temp degrees from start point
         whASet = tScaled * (SERVOANGLE/tRange) # Scaled angle
-        SetAngle(270 - whASet)
+        SetAngle(whASet)
 
 def SetAngle(angle):
-    duty = angle / 27 + PWM0
+    if DIRECTION != "CW":   # Reverse the direction if needed
+        angle = SERVOANGLE - angle
+
+    duty = angle / (SERVOANGLE/10) + PWM0
 
     GPIO.output(SERVOGPIO, GPIO_ON)
     srvo.ChangeDutyCycle(duty)
@@ -185,6 +189,7 @@ def SetAngle(angle):
     GPIO.output(SERVOGPIO, GPIO_OFF)
     srvo.ChangeDutyCycle(0)
     print (f"Set angle: {angle} duty: {duty}")
+
 
 def mqttConnect():
     mqttc.on_connect = on2connect

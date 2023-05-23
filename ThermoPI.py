@@ -161,7 +161,7 @@ def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
     Topic = msg.topic
-    whSet = only_numerics(msg.payload)
+    whSet = unpack('>h',msg.payload)
 
     print (f"Message: {str(whSet)} from Topic: {Topic}")
 

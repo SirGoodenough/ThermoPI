@@ -155,20 +155,24 @@ def on2connect(mqttc, userdata, flags, rc):
 def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
+    tRange = TRANGEMAX - TRANGEMIN    # Number of degrees in range
+    if isinstance(msg.payload, int):  # MUST BE AN INTEGER
+        whTSet = int(msg.payload)
+    else:   # Set to mid-Range rather than error if not integer
+        whTSet = int(round((tRange/2) + TRANGEMIN,0))
+        print (f"WARNING!! Value set to mid-range because not an integer.")
+
     Topic = msg.topic
-    whTSet = int(msg.payload)
 
     print (f"Message: {str(whTSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and
-        isinstance(whTSet, int) and
         int(whTSet) <= TRANGEMAX and
         int(whTSet) >= TRANGEMIN
         ):
         # Scale the Temperature range to the angle. My servo is 270 degrees.
         tScaled = whTSet - TRANGEMIN    # Number degrees from start point.
-        tRange = TRANGEMAX - TRANGEMIN  # Number of degrees in range
         whASet = tScaled * (SERVOANGLE/tRange) # Scaled angle
         SetAngle(whASet)
 

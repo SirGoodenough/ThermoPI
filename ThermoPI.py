@@ -62,7 +62,7 @@ PWD = MYs["MAIN"]["PWD"]
 
 # GPIO Setup
 SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
-TSTATGPIO = int(MYs["WHCONTROL"]["TSTATGPIO"])
+TSTATGPIO = int(MYs["BINARY_SENSOR"]["TSTATGPIO"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
@@ -83,11 +83,14 @@ srvo.start(0)
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
 
 TOPIC = "homeassistant/sensor/"
+TOPICBS = "homeassistant/binary_sensor/"
 
 NAMED = MYs["TEMP"]["DEVICE_NAME"]
 D_ID = DEVICE_ID + '_' + NAMED
 STATE = TOPIC + D_ID + '/state'
 LWT = TOPIC + D_ID + '/lwt'
+STATEBS = TOPICBS + D_ID + '/state'
+LWTBS = TOPICBS + D_ID + '/lwt'
 
 NAMEH = MYs["TEMP"]["NAMEH"]
 H_ID =  DEVICE_ID + '_' + MYs["TEMP"]["H_ID"]
@@ -96,6 +99,10 @@ CONFIGH = TOPIC + H_ID + '/config'
 NAMET = MYs["TEMP"]["NAMET"]
 T_ID = DEVICE_ID + '_' + MYs["TEMP"]["T_ID"]
 CONFIGT = TOPIC + T_ID + '/config'
+
+NAMETstat = MYs["BINARY_SENSOR"]["NAMETstat"]
+Tstat_ID = DEVICE_ID + '_' + MYs["BINARY_SENSOR"]["Tstat_ID"]
+CONFIGTstat = TOPICBS + Tstat_ID + '/config'
 
 payloadHconfig = {
     "name": NAMEH,
@@ -145,6 +152,28 @@ payloadTconfig = {
     "val_tpl": "{{ value_json.temperature }}"
 }
 
+payloadTstatconfig = {
+    "name": NAMETstat,
+    "stat_t": STATEBS,
+    "avty_t": LWTBS,
+    "pl_avail": "Online",
+    "pl_not_avail": "Offline",
+    "uniq_id": Tstat_ID,
+    "dev": {
+        "ids": [
+        D_ID,
+        DEVICE_ID
+        ],
+        "name": "ThermoPI",
+        'sa': AREA,
+        "mf": "SirGoodenough",
+        "mdl": "HomeAssistant Discovery for ThermoPI",
+        "sw": "https://github.com/SirGoodenough/ThermoPI"
+    },
+    "frc_upd": True,
+    "dev_cla":"heat"
+}
+
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
         print(f"Connecting to MQTT on {HOST} {PORT} with result code {str(rc)}.")
@@ -190,7 +219,6 @@ def SetAngle(angle):
     srvo.ChangeDutyCycle(0)
     print (f"Set angle: {angle} duty: {duty}")
 
-
 def mqttConnect():
     mqttc.on_connect = on2connect
     mqttc.on_message = on2message
@@ -199,6 +227,7 @@ def mqttConnect():
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
+    mqttc.publish(CONFIGTstat, json.dumps(payloadTconfig), 1, True)
 
 # Log Message to start
 print(f"Logging sensor measurements from {NAMET} & {NAMEH} every {LOOP} seconds.")
@@ -216,6 +245,11 @@ try:
         tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
         humidityOut = round(humidity,1)         # Round to .1
 
+        if GPIO.input(TSTATGPIO):
+            TStatState = "ON"
+        else:
+            TStatState = "OFF"
+
         currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
         print(f"Date Time:   {currentdate}")
 
@@ -227,10 +261,19 @@ try:
             print(f"Updating {STATE} {json.dumps(payloadOut)}")
             (result1,mid) = mqttc.publish(STATE, json.dumps(payloadOut), 1, True)
 
-            print(f"MQTT Update result {result1}")
+            print(f"MQTT Update 1 result {result1}")
 
             if result1 != 0:
-                raise ValueError('Result message from MQTT was not 0')
+                raise ValueError('Result message1 from MQTT was not 0')
+
+
+            print(f"Updating {STATEBS} {TStatState}")
+            (result2,mid) = mqttc.publish(STATEBS, TStatState, 1, True)
+
+            print(f"MQTT Update 2 result {result2}")
+
+            if result2 != 0:
+                raise ValueError('Result message2 from MQTT was not 0')
 
         except Exception as e:
             # Error appending data, most likely because credentials are stale.

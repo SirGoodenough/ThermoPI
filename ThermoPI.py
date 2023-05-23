@@ -90,7 +90,6 @@ D_ID = DEVICE_ID + '_' + NAMED
 STATE = TOPIC + D_ID + '/state'
 LWT = TOPIC + D_ID + '/lwt'
 STATEBS = TOPICBS + D_ID + '/state'
-LWTBS = TOPICBS + D_ID + '/lwt'
 
 NAMEH = MYs["TEMP"]["NAMEH"]
 H_ID =  DEVICE_ID + '_' + MYs["TEMP"]["H_ID"]
@@ -124,7 +123,7 @@ payloadHconfig = {
     },
     "unit_of_meas": "%",
     "dev_cla":"humidity",
-    "frc_upd": True,
+    "frc_upd": True,STATEBS
     "val_tpl": "{{ value_json.humidity }}"
 }
 
@@ -155,7 +154,7 @@ payloadTconfig = {
 payloadTstatconfig = {
     "name": NAMETstat,
     "stat_t": STATEBS,
-    "avty_t": LWTBS,
+    "avty_t": LWT,
     "pl_avail": "Online",
     "pl_not_avail": "Offline",
     "uniq_id": Tstat_ID,

@@ -34,14 +34,12 @@
 
 import Adafruit_DHT
 import paho.mqtt.client as mqtt
-import re 
 import sys
 import time
 import yaml
 import json
 import uuid
 import RPi.GPIO as GPIO
-from struct import *
 
 #  Get the parameter file
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
@@ -69,6 +67,7 @@ WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
 TRANGEMAX = float(MYs["WHCONTROL"]["TRANGEMAX"])
+SERVOANGLE = float(MYs["WHCONTROL"]["SERVOANGLE"])
 PWM0 = float(MYs["WHCONTROL"]["PWM0"])
 GPIO_ON = GPIO.HIGH
 GPIO_OFF = GPIO.LOW
@@ -145,10 +144,6 @@ payloadTconfig = {
     "val_tpl": "{{ value_json.temperature }}"
 }
 
-def only_numerics(seq):
-    seq_type= type(seq)
-    return seq_type().join(filter(seq_type.isdigit, seq))
-
 def on2connect(mqttc, userdata, flags, rc):
     if rc==0:
         print(f"Connecting to MQTT on {HOST} {PORT} with result code {str(rc)}.")
@@ -161,17 +156,21 @@ def on2message(mqttc, userdata, msg):
     # The callback for when a PUBLISH message is received from the server.
 
     Topic = msg.topic
-    whSet = int(msg.payload)
+    whTSet = int(msg.payload)
 
-    print (f"Message: {str(whSet)} from Topic: {Topic}")
+    print (f"Message: {str(whTSet)} from Topic: {Topic}")
 
     # Handle Message
     if ( Topic == WHTOPIC and
-        isinstance(whSet, int) and
-        int(whSet) <= TRANGEMAX and
-        int(whSet) >= TRANGEMIN
+        isinstance(whTSet, int) and
+        int(whTSet) <= TRANGEMAX and
+        int(whTSet) >= TRANGEMIN
         ):
-        SetAngle(int(whSet))
+        # Scale the Temperature range to the angle. My servo is 270 degrees.
+        tScaled = whTSet - TRANGEMIN    # Number degrees from start point.
+        tRange = TRANGEMAX - TRANGEMIN  # Number of degrees in range
+        whASet = tScaled * (SERVOANGLE/tRange) # Scaled angle
+        SetAngle(whASet)
 
 def SetAngle(angle):
     duty = angle / 27 + PWM0

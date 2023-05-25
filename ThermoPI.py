@@ -41,6 +41,8 @@ import json
 import uuid
 import RPi.GPIO as GPIO
 
+Release_date = "2023-05-30"
+
 #  Get the parameter file
 with open("/opt/ThermoPI/MYsecrets.yaml", "r") as ymlfile:
     MYs = yaml.safe_load(ymlfile)
@@ -59,10 +61,12 @@ HOST = MYs["MAIN"]["HOST"]
 PORT = MYs["MAIN"]["PORT"]
 USER = MYs["MAIN"]["USER"]
 PWD = MYs["MAIN"]["PWD"]
+STETOPIC = MYs["MAIN"]["STETOPIC"]
 
 # GPIO Setup
 SERVOGPIO = int(MYs["WHCONTROL"]["SERVOGPIO"])
-TSTATGPIO = int(MYs["BINARY_SENSOR"]["TSTATGPIO"])
+TSTATGPIO1 = int(MYs["BINARY_SENSOR"]["TSTATGPIO1"])
+TSTATGPIO2 = int(MYs["BINARY_SENSOR"]["TSTATGPIO2"])
 WHTOPIC = MYs["WHCONTROL"]["WHTOPIC"]
 PULSEFREQUENCY = float(MYs["WHCONTROL"]["PULSEFREQUENCY"])
 TRANGEMIN = float(MYs["WHCONTROL"]["TRANGEMIN"])
@@ -75,9 +79,10 @@ GPIO_OFF = GPIO.LOW
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SERVOGPIO, GPIO.OUT)
-GPIO.setup(TSTATGPIO, GPIO.IN)
+GPIObs = [TSTATGPIO1,TSTATGPIO2]
+GPIO.setup(GPIObs, GPIO.IN)
 srvo = GPIO.PWM(SERVOGPIO,PULSEFREQUENCY)
-srvo.start(0)
+srvo.start(7.5)
 
 # Pulling the unique MAC SN section address using uuid and getnode() function 
 DEVICE_ID = (hex(uuid.getnode())[-6:]).upper()
@@ -87,9 +92,8 @@ TOPICBS = "homeassistant/binary_sensor/"
 
 NAMED = MYs["TEMP"]["DEVICE_NAME"]
 D_ID = DEVICE_ID + '_' + NAMED
-STATE = TOPIC + D_ID + '/state'
-LWT = TOPIC + D_ID + '/lwt'
-STATEBS = TOPICBS + D_ID + '/state'
+STATE = STETOPIC + D_ID
+LWT = STETOPIC + D_ID + '/lwt'
 
 NAMEH = MYs["TEMP"]["NAMEH"]
 H_ID =  DEVICE_ID + '_' + MYs["TEMP"]["H_ID"]
@@ -99,9 +103,15 @@ NAMET = MYs["TEMP"]["NAMET"]
 T_ID = DEVICE_ID + '_' + MYs["TEMP"]["T_ID"]
 CONFIGT = TOPIC + T_ID + '/config'
 
-NAMETstat = MYs["BINARY_SENSOR"]["NAMETstat"]
-Tstat_ID = DEVICE_ID + '_' + MYs["BINARY_SENSOR"]["Tstat_ID"]
-CONFIGTstat = TOPICBS + Tstat_ID + '/config'
+NAMETstat1 = MYs["BINARY_SENSOR"]["NAMETstat1"]
+Tstat1_ID = DEVICE_ID + '_' + MYs["BINARY_SENSOR"]["Tstat1_ID"]
+CONFIGTstat1 = TOPICBS + Tstat1_ID + '/config'
+STATEBS1 = STETOPIC + Tstat1_ID
+
+NAMETstat2 = MYs["BINARY_SENSOR"]["NAMETstat2"]
+Tstat2_ID = DEVICE_ID + '_' + MYs["BINARY_SENSOR"]["Tstat2_ID"]
+CONFIGTstat2 = TOPICBS + Tstat2_ID + '/config'
+STATEBS2 = STETOPIC + Tstat2_ID
 
 payloadHconfig = {
     "name": NAMEH,
@@ -151,13 +161,35 @@ payloadTconfig = {
     "val_tpl": "{{ value_json.temperature }}"
 }
 
-payloadTstatconfig = {
-    "name": NAMETstat,
-    "stat_t": STATEBS,
+payloadTstatconfig1 = {
+    "name": NAMETstat1,
+    "stat_t": STATEBS1,
     "avty_t": LWT,
     "pl_avail": "Online",
     "pl_not_avail": "Offline",
-    "uniq_id": Tstat_ID,
+    "uniq_id": Tstat1_ID,
+    "dev": {
+        "ids": [
+        D_ID,
+        DEVICE_ID
+        ],
+        "name": "ThermoPI",
+        'sa': AREA,
+        "mf": "SirGoodenough",
+        "mdl": "HomeAssistant Discovery for ThermoPI",
+        "sw": "https://github.com/SirGoodenough/ThermoPI"
+    },
+    "frc_upd": True,
+    "dev_cla":"heat"
+}
+
+payloadTstatconfig2 = {
+    "name": NAMETstat2,
+    "stat_t": STATEBS2,
+    "avty_t": LWT,
+    "pl_avail": "Online",
+    "pl_not_avail": "Offline",
+    "uniq_id": Tstat2_ID,
     "dev": {
         "ids": [
         D_ID,
@@ -226,7 +258,8 @@ def mqttConnect():
     mqttc.publish(LWT, "Online", 1, True)
     mqttc.publish(CONFIGH, json.dumps(payloadHconfig), 1, True)
     mqttc.publish(CONFIGT, json.dumps(payloadTconfig), 1, True)
-    mqttc.publish(CONFIGTstat, json.dumps(payloadTstatconfig), 1, True)
+    mqttc.publish(CONFIGTstat1, json.dumps(payloadTstatconfig1), 1, True)
+    mqttc.publish(CONFIGTstat2, json.dumps(payloadTstatconfig2), 1, True)
 
 # Log Message to start
 print(f"Logging sensor measurements from {NAMET} & {NAMEH} every {LOOP} seconds.")
@@ -244,10 +277,14 @@ try:
         tempF = round((9.0/5.0 * tempC + 32),1) # Conversion to F & round to .1
         humidityOut = round(humidity,1)         # Round to .1
 
-        if GPIO.input(TSTATGPIO):
-            TStatState = "ON"
+        if GPIO.input(TSTATGPIO1):  # Inverse read on the sensor
+            TStatState1 = "OFF"
         else:
-            TStatState = "OFF"
+            TStatState1 = "ON"
+        if GPIO.input(TSTATGPIO2):  # Inverse read on the sensor
+            TStatState2 = "OFF"
+        else:
+            TStatState2 = "ON"
 
         currentdate = time.strftime('%Y-%m-%d %H:%M:%S')
         print(f"Date Time:   {currentdate}")
@@ -266,13 +303,22 @@ try:
                 raise ValueError('Result message1 from MQTT was not 0')
 
 
-            print(f"Updating {STATEBS} {TStatState}")
-            (result2,mid) = mqttc.publish(STATEBS, TStatState, 1, True)
+            print(f"Updating {STATEBS1} {TStatState1}")
+            (result2,mid) = mqttc.publish(STATEBS1, TStatState1, 1, True)
 
             print(f"MQTT Update 2 result {result2}")
 
             if result2 != 0:
                 raise ValueError('Result message2 from MQTT was not 0')
+
+
+            print(f"Updating {STATEBS2} {TStatState2}")
+            (result3,mid) = mqttc.publish(STATEBS2, TStatState2, 1, True)
+
+            print(f"MQTT Update 3 result {result3}")
+
+            if result3 != 0:
+                raise ValueError('Result message3 from MQTT was not 0')
 
         except Exception as e:
             # Error appending data, most likely because credentials are stale.
